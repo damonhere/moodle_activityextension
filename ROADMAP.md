@@ -25,3 +25,73 @@ administration menu.
 `extension_link::render()` already branches early to hide the student view
 entirely from anyone holding `:manage` -- this item would replace that
 early `return '';` with the teacher-facing count/link instead.
+
+### Inconsistent "Enable" checkbox position on the student request form
+
+Flagged: 2026-09-07, from testing on a real site.
+
+On `request_form.php`, the "Requested new close date" field's optional
+"Enable" checkbox renders on the **left** of the date selector, but the
+"Requested new time limit" field's "Enable" checkbox renders on the
+**right** of its number/unit inputs. Both are Moodle form elements
+(`date_time_selector` and `duration` respectively) used with
+`optional => true`, and each element type appears to lay out its own
+"enabled" checkbox in a different default position -- this isn't something
+our code explicitly controls today.
+
+Should be made consistent (checkbox on the left for both, most likely),
+which will need investigating whether formslib exposes an option to
+control checkbox placement for these element types, or whether it needs a
+small CSS/template override in this plugin instead.
+
+### Color-code the status column everywhere it's shown
+
+Flagged: 2026-09-07, from testing on a real site.
+
+The Status column is currently plain text (whatever
+`get_string('status:' . $status, ...)` returns) everywhere it appears.
+Suggested improvement: render it as a colored badge/box instead, so status
+is recognizable at a glance -- yellow for Pending, green for Approved, red
+for Denied, orange for Cancelled. Confirmed in scope for all three places
+this plugin shows a status:
+
+- `myrequests.php` (student "My extension requests" page)
+- `classes/table/requests_table.php`'s `col_status()` (the teacher-facing
+  course-wide report, `report.php`)
+- `manage.php` (the teacher's pending-requests dashboard) -- every row
+  there is Pending by definition, so this would mainly mean styling that
+  one status consistently with how it's colored elsewhere, for visual
+  consistency across the three pages rather than to distinguish rows from
+  each other.
+
+Likely implemented with Bootstrap's existing badge classes (e.g.
+`badge badge-warning`/`badge-success`/`badge-danger` and something
+orange-ish for cancelled, which doesn't have as direct a stock Bootstrap
+class) rather than bespoke CSS, to stay consistent with the rest of
+Moodle's theme, and probably worth a small shared helper (e.g.
+`request_manager::status_badge($status)`) so the three call sites don't
+each reimplement the same status-to-class mapping.
+
+## Under consideration (deferred)
+
+Bigger, less-settled ideas -- deliberately not acted on yet, pending real
+usage experience.
+
+### Consolidate the teacher-side report and per-quiz manage page
+
+Flagged: 2026-09-07, from testing on a real site. **Deferred by choice**:
+"leave it for now to see how it works" before deciding whether to act.
+
+The teacher-side extension-management surface is split across two pages
+today: `report.php` (course-wide, read-mostly, one row per request across
+every quiz) and `manage.php` (per-quiz, actionable -- AJAX approve/deny via
+`core_form/modalform`, but only for that one quiz's pending requests). This
+is a bit clunky: a teacher can see the full picture on the report page but
+has to jump to a specific quiz's dashboard to actually act on anything.
+
+Ideal direction, if this friction turns out to matter in practice: bring
+the same AJAX approve/deny modals (`approve_form`/`deny_form`) directly
+into `report.php`'s per-row actions for pending requests, so acting on a
+request doesn't require leaving the course-wide report at all -- which
+could ultimately make `manage.php` redundant, or at least less necessary
+as the primary place teachers work from.
