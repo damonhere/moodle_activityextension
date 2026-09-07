@@ -198,3 +198,8 @@ Decisions below.
 - **Quota counting**: "requests used out of total available" counts
   **approved requests only** — denied and cancelled requests do not count
   against a student's quota.
+
+## Roadmap
+
+See `ROADMAP.md` for candidate improvements flagged from real use that
+aren't part of this spec yet.
