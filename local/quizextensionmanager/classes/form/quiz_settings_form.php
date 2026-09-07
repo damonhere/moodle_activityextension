@@ -58,8 +58,9 @@ class quiz_settings_form extends \moodleform {
             'required' => get_string('documentationmode:required', 'local_quizextensionmanager'),
         ]);
 
-        $mform->addElement('text', 'allowedfiletypes', get_string('settings:allowedfiletypes', 'local_quizextensionmanager'));
-        $mform->setType('allowedfiletypes', PARAM_RAW);
+        // The standard file-type browser widget (same one used for e.g.
+        // assignment submission types), rather than a bare text box.
+        $mform->addElement('filetypes', 'allowedfiletypes', get_string('settings:allowedfiletypes', 'local_quizextensionmanager'));
         $mform->hideIf('allowedfiletypes', 'documentationmode', 'eq', 'none');
 
         $mform->addElement(

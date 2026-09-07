@@ -1,6 +1,6 @@
 # Moodle Plugin: Quiz Time Extension Requests
 
-**Version:** 0.9
+**Version:** 0.12
 
 _Kept in lockstep with `local_quizextensionmanager`'s `$plugin->release` in
 `version.php` -- every bump here should bump that too, even for a
@@ -10,6 +10,35 @@ it changes far less often and isn't what this spec version is tracking.)_
 
 ## Version History
 
+- **v0.12** (2026-09-07) — Relabeled the approve-modal's editable fields
+  from "Granted close date"/"Granted time limit"/"Granted number of
+  attempts" to "Requested close date"/"Requested time limit"/"Requested
+  number of attempts". Flagged from testing: those values aren't actually
+  granted until the teacher submits the modal, so "Granted" read as
+  though a decision had already been made. Scoped to `form:granted*`
+  strings only (used only in `approve_form.php`) -- the separate
+  `table:granted*` strings used elsewhere for already-decided historical
+  values are unaffected and still correctly say "Granted".
+- **v0.11** (2026-09-07) — Two fixes flagged while testing the
+  documentation-upload workflow on a live site:
+  - The site-wide and per-quiz "allowed documentation file types"
+    settings now use Moodle's standard `filetypes` picker widget
+    (`admin_setting_filetypes` / the `filetypes` form element) instead of
+    a bare text box -- this was flagged as a TODO in the very first
+    scaffold and never followed up on until now.
+  - Teachers (anyone holding `local/quizextensionmanager:manage` for the
+    quiz) now get a notification when a student submits a new request,
+    not just when one is approved/denied. New message provider
+    `newrequest`, admin-configurable subject/body templates matching the
+    existing approved/denied pattern.
+- **v0.10** (2026-09-07) — Documentation links (added in v0.9) now open in
+  a new tab (`target="_blank" rel="noopener"`) instead of the same tab.
+  Flagged immediately after v0.9: without this, opening a large image/PDF
+  from inside the approve/deny modal would navigate the reviewer's whole
+  page away from `manage.php`, losing their place mid-review. A fuller
+  inline-preview experience is noted in `ROADMAP.md` under "Under
+  consideration", deferred since new-tab viewing already solves the actual
+  problem.
 - **v0.9** (2026-09-07) — Teachers can now view a request's uploaded
   supporting documentation (if any) directly in the approve/deny modals --
   flagged as a gap when testing the AJAX approve/deny workflow: the
@@ -130,6 +159,9 @@ hand-rolling them.
 - Per course, the teacher/instructor can specify an option to limit the total number of requests students are allowed.
 - Per course, the teacher/instructor can specify the default "quiz window" to be number of days past the quiz close date.
 - View a list of pending extension requests for quizzes in their course.
+- **(v0.11)** Receive a notification (Moodle message/email) when a
+      student submits a new extension request, sent to everyone holding
+      the manage capability for that quiz.
 - Approve or deny a request from the list, optionally editing the granted extra time and optionally opening the request to see more details.
 - **(v0.4)** Approving or denying a request from the pending-requests
       dashboard happens **in a modal dialog, via AJAX, without a full page
@@ -150,6 +182,11 @@ hand-rolling them.
 ### Admin-facing
 - Site-wide settings page (e.g. max extension allowed, whether reason
       is required, whether documentation is notused / permitted / required, default documentation filetypes allowed, notification templates).
+- **(v0.11)** The allowed-documentation-filetypes setting (both site-wide
+      and per-quiz) uses Moodle's standard file-type browser widget
+      (`admin_setting_filetypes` / the `filetypes` form element -- the
+      same one used for e.g. assignment submission types), not a bare
+      text box.
 - Capability definitions for who can request vs. approve.
 
 ## Data Model (draft — verified against Moodle schema)

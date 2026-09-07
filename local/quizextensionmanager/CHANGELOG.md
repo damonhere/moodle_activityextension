@@ -5,6 +5,46 @@ All notable changes to `local_quizextensionmanager` are documented here.
 Starting at 0.8, this release number is kept in lockstep with
 `PLUGIN_SPEC.md`'s version (previously they'd drifted to 0.7 vs. 0.3.3).
 
+## [0.12] - 2026-09-07
+
+### Changed
+
+- `form:grantedtimeclose`/`form:grantedtimelimit`/`form:grantedattempts`
+  (the approve modal's editable field labels) renamed from "Granted..."
+  to "Requested..." -- flagged from testing: those values aren't actually
+  granted until the modal is submitted. Only affects `approve_form.php`;
+  the separate `table:granted*` strings used for already-decided
+  historical values elsewhere are unchanged.
+
+## [0.11] - 2026-09-07
+
+### Added
+
+- `notification_manager::send_new_request()`, called from
+  `request_manager::create_request()`: notifies everyone holding
+  `local/quizextensionmanager:manage` for the quiz when a student submits
+  a new request, via a new `newrequest` message provider
+  (`db/messages.php`) and admin-configurable subject/body templates
+  matching the existing approved/denied pattern.
+
+### Changed
+
+- `settings.php` and `quiz_settings_form.php`: the allowed-documentation-
+  file-types field now uses Moodle's standard `filetypes`
+  picker widget (`admin_setting_filetypes` / the `filetypes` form
+  element) instead of a bare text box. This was a TODO left over from the
+  very first scaffold, confirmed as needed while testing the
+  documentation-upload workflow on a live site.
+
+## [0.10] - 2026-09-07
+
+### Fixed
+
+- `request_manager::get_documentation_html()`: links now open in a new tab
+  (`target="_blank" rel="noopener"`) instead of the same tab, so opening a
+  large image/PDF from the approve/deny modal doesn't navigate the
+  reviewer away from `manage.php` mid-review.
+
 ## [0.9] - 2026-09-07
 
 ### Added

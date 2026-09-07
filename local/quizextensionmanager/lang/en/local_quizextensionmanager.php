@@ -65,6 +65,16 @@ $string['settings:notifydeniedbody'] = 'Denial notification body';
 $string['settings:notifydeniedbody_desc'] = 'Message body template used when notifying a student that ' .
     'their request was denied. Leave blank to use the built-in default. Supports the same placeholders ' .
     'as the denial notification subject.';
+$string['settings:notifynewrequestsubject'] = 'New request notification subject';
+$string['settings:notifynewrequestsubject_desc'] = 'Subject line template used when notifying a teacher ' .
+    '(anyone holding the manage capability for the quiz) that a student has submitted a new extension ' .
+    'request. Leave blank to use the built-in default. Supports the placeholders {$a->studentname}, ' .
+    '{$a->quizname}, {$a->coursename}, {$a->requestedtimeclose}, {$a->requestedtimelimit}, ' .
+    '{$a->requestedattempts} and {$a->reason}, substituted literally (not via get_string).';
+$string['settings:notifynewrequestbody'] = 'New request notification body';
+$string['settings:notifynewrequestbody_desc'] = 'Message body template used when notifying a teacher that ' .
+    'a student has submitted a new extension request. Leave blank to use the built-in default. Supports ' .
+    'the same placeholders as the new request notification subject.';
 
 // Privacy.
 $string['privacy:metadata:quizextensionmanager_request'] = 'Information about a single quiz time extension ' .
@@ -130,9 +140,9 @@ $string['form:reason'] = 'Reason';
 $string['form:documentation'] = 'Supporting documentation';
 $string['form:submit'] = 'Submit request';
 $string['form:student'] = 'Student';
-$string['form:grantedtimeclose'] = 'Granted close date';
-$string['form:grantedtimelimit'] = 'Granted time limit';
-$string['form:grantedattempts'] = 'Granted number of attempts';
+$string['form:grantedtimeclose'] = 'Requested close date';
+$string['form:grantedtimelimit'] = 'Requested time limit';
+$string['form:grantedattempts'] = 'Requested number of attempts';
 $string['form:reviewreason'] = 'Comment (optional)';
 
 // Quiz settings form.
@@ -229,6 +239,13 @@ $string['notify:deniedsubject:default'] = 'Your extension request for {$a->quizn
 $string['notify:deniedbody:default'] = 'Your request for a time extension on "{$a->quizname}" in ' .
     '{$a->coursename} has been denied.' . "\n\n" .
     'Reviewer comment: {$a->reviewreason}';
+$string['notify:newrequestsubject:default'] = 'New extension request for {$a->quizname}';
+$string['notify:newrequestbody:default'] = '{$a->studentname} has requested a time extension on ' .
+    '"{$a->quizname}" in {$a->coursename}.' . "\n\n" .
+    'Requested close date: {$a->requestedtimeclose}' . "\n" .
+    'Requested time limit: {$a->requestedtimelimit}' . "\n" .
+    'Requested attempts: {$a->requestedattempts}' . "\n\n" .
+    'Reason: {$a->reason}';
 
 // Eligibility rejection reasons.
 $string['eligibility:noquiz'] = 'This quiz could not be found.';

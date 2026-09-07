@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Sends approved/denied extension request notifications via Moodle's
+ * Sends new-request/approved/denied extension request notifications via Moodle's
  * message API.
  *
  * @package    local_quizextensionmanager
@@ -56,6 +56,76 @@ class notification_manager {
      */
     public static function send_denied(\stdClass $request): void {
         self::send($request, 'denied');
+    }
+
+    /**
+     * Notify teachers (anyone holding local/quizextensionmanager:manage for
+     * the quiz) that a new extension request has been submitted.
+     *
+     * @param \stdClass $request the newly-created (pending) request record.
+     */
+    public static function send_new_request(\stdClass $request): void {
+        global $DB;
+
+        $cm = get_coursemodule_from_instance('quiz', $request->quizid, 0, false, IGNORE_MISSING);
+        if (!$cm) {
+            return;
+        }
+        $context = \context_module::instance($cm->id);
+
+        $recipients = get_users_by_capability($context, 'local/quizextensionmanager:manage');
+        if (empty($recipients)) {
+            return;
+        }
+
+        $student = \core_user::get_user($request->userid);
+        $quiz = $DB->get_record('quiz', ['id' => $request->quizid]);
+        $course = $DB->get_record('course', ['id' => $request->courseid]);
+
+        $a = new \stdClass();
+        $a->studentname = $student ? fullname($student) : '';
+        $a->quizname = $quiz ? format_string($quiz->name) : '';
+        $a->coursename = $course ? format_string($course->fullname) : '';
+        $a->requestedtimeclose = self::format_date($request->requestedtimeclose);
+        $a->requestedtimelimit = self::format_duration($request->requestedtimelimit);
+        $a->requestedattempts = ($request->requestedattempts !== null && $request->requestedattempts !== '')
+            ? $request->requestedattempts : get_string('unchanged', 'local_quizextensionmanager');
+        $a->reason = (string) ($request->reason ?? '');
+
+        $subjecttpl = get_config('local_quizextensionmanager', 'notifynewrequestsubject');
+        $bodytpl = get_config('local_quizextensionmanager', 'notifynewrequestbody');
+
+        $subject = (trim((string) $subjecttpl) !== '')
+            ? self::apply_placeholders($subjecttpl, $a)
+            : get_string('notify:newrequestsubject:default', 'local_quizextensionmanager', $a);
+
+        $body = (trim((string) $bodytpl) !== '')
+            ? self::apply_placeholders($bodytpl, $a)
+            : get_string('notify:newrequestbody:default', 'local_quizextensionmanager', $a);
+
+        $manageurl = (new \moodle_url('/local/quizextensionmanager/manage.php', ['cmid' => $cm->id]))->out(false);
+
+        foreach ($recipients as $recipient) {
+            if (isguestuser($recipient) || (int) $recipient->id === (int) $request->userid) {
+                continue;
+            }
+
+            $message = new \core\message\message();
+            $message->component = 'local_quizextensionmanager';
+            $message->name = 'newrequest';
+            $message->userfrom = \core_user::get_noreply_user();
+            $message->userto = $recipient;
+            $message->subject = $subject;
+            $message->fullmessage = $body;
+            $message->fullmessageformat = FORMAT_PLAIN;
+            $message->fullmessagehtml = nl2br(s($body));
+            $message->smallmessage = $subject;
+            $message->notification = 1;
+            $message->contexturl = $manageurl;
+            $message->contexturlname = get_string('pluginname', 'local_quizextensionmanager');
+
+            message_send($message);
+        }
     }
 
     /**

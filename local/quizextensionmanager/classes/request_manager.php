@@ -130,6 +130,8 @@ class request_manager {
      * Snapshots the quiz's current timeclose/timelimit/attempts onto the
      * request row so the UI/audit trail still shows what the student was
      * comparing against even if the quiz's own settings change later.
+     * Notifies teachers (anyone holding local/quizextensionmanager:manage
+     * for the quiz) once the request is created.
      *
      * @param int $quizid the quiz instance id.
      * @param int $userid the requesting student's user id.
@@ -173,6 +175,8 @@ class request_manager {
         $record->timemodified = $now;
 
         $record->id = $DB->insert_record(self::TABLE, $record);
+
+        notification_manager::send_new_request($record);
 
         return $record;
     }
@@ -361,7 +365,10 @@ class request_manager {
                 $file->get_filepath(),
                 $file->get_filename()
             );
-            $links[] = \html_writer::link($url, $file->get_filename());
+            // target="_blank" so opening a (possibly large) image/PDF
+            // doesn't navigate the reviewer away from the approve/deny
+            // modal they're in the middle of using.
+            $links[] = \html_writer::link($url, $file->get_filename(), ['target' => '_blank', 'rel' => 'noopener']);
         }
 
         return implode(\html_writer::empty_tag('br'), $links);

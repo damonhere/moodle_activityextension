@@ -60,14 +60,13 @@ if ($hassiteconfig) {
     ));
 
     // Default allowed documentation file types. Can be overridden per quiz.
-    // TODO: replace with the core filetypes picker (see \core_form\filetypes_util /
-    // admin_setting_filetypes) so teachers get the standard file-type browser widget.
-    $settings->add(new admin_setting_configtext(
+    // admin_setting_filetypes gives admins the same file-type browser widget
+    // used for e.g. assignment submission types, rather than a bare text box.
+    $settings->add(new admin_setting_filetypes(
         'local_quizextensionmanager/allowedfiletypes',
         get_string('settings:allowedfiletypes', 'local_quizextensionmanager'),
         get_string('settings:allowedfiletypes_desc', 'local_quizextensionmanager'),
-        'document image',
-        PARAM_RAW
+        'document image'
     ));
 
     // Notification templates.
@@ -100,6 +99,22 @@ if ($hassiteconfig) {
         'local_quizextensionmanager/notifydeniedbody',
         get_string('settings:notifydeniedbody', 'local_quizextensionmanager'),
         get_string('settings:notifydeniedbody_desc', 'local_quizextensionmanager'),
+        '',
+        PARAM_RAW
+    ));
+
+    $settings->add(new admin_setting_configtext(
+        'local_quizextensionmanager/notifynewrequestsubject',
+        get_string('settings:notifynewrequestsubject', 'local_quizextensionmanager'),
+        get_string('settings:notifynewrequestsubject_desc', 'local_quizextensionmanager'),
+        '',
+        PARAM_RAW
+    ));
+
+    $settings->add(new admin_setting_configtextarea(
+        'local_quizextensionmanager/notifynewrequestbody',
+        get_string('settings:notifynewrequestbody', 'local_quizextensionmanager'),
+        get_string('settings:notifynewrequestbody_desc', 'local_quizextensionmanager'),
         '',
         PARAM_RAW
     ));

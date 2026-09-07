@@ -72,7 +72,22 @@ Moodle's theme, and probably worth a small shared helper (e.g.
 `request_manager::status_badge($status)`) so the three call sites don't
 each reimplement the same status-to-class mapping.
 
-## Under consideration (deferred)
+### Show a per-quiz history of decided requests, not just pending ones
+
+Flagged: 2026-09-07, from testing on a real site. Explicitly flagged for a
+future release, not to be built now.
+
+`manage.php` only ever shows `status = 'pending'` requests for a quiz, by
+design -- once a request is approved/denied/cancelled it disappears from
+that view entirely. The only place to see a decided request afterward is
+the course-wide `report.php`, which mixes in every other quiz in the
+course too. A teacher focused on one quiz has no quiz-scoped way to look
+back at what was already approved/cancelled for it.
+
+Possible direction: a collapsed "History" section (or a status filter)
+below the pending list on `manage.php`, scoped to that one quiz, reusing
+`request_manager::get_course_requests()`-style querying but filtered by
+`quizid` instead of `courseid`.
 
 Bigger, less-settled ideas -- deliberately not acted on yet, pending real
 usage experience.
@@ -95,3 +110,19 @@ into `report.php`'s per-row actions for pending requests, so acting on a
 request doesn't require leaving the course-wide report at all -- which
 could ultimately make `manage.php` redundant, or at least less necessary
 as the primary place teachers work from.
+
+### Inline preview of uploaded documentation in the approve/deny modals
+
+Flagged: 2026-09-07, alongside adding documentation viewing itself (see
+`PLUGIN_SPEC.md` v0.9). **Deferred by choice**: opening the file in a new
+tab (what's built now) solves the actual problem -- not losing your place
+in the review -- without the added complexity of an inline viewer.
+
+`request_manager::get_documentation_html()` currently renders plain
+`target="_blank"` download links. A nicer experience for image/PDF
+uploads would render them inline in (or as a further modal launched from)
+the approve/deny modal itself, so the reviewer never leaves the tab at
+all. Would need a real embedded viewer (e.g. an `<img>` for images, an
+`<iframe>`/PDF.js-based viewer for PDFs) and some thought about what to
+do with file types that can't be previewed at all -- worth doing only if
+new-tab viewing turns out to be annoying in practice.
