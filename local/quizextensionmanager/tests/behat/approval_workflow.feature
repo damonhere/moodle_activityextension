@@ -1,8 +1,10 @@
-@local @local_quizextensionmanager @mod_quiz
+@local @local_quizextensionmanager @mod_quiz @javascript
 Feature: Teachers approve or deny quiz extension requests
-  In order to grant or refuse extra time on a quiz
+  In order to grant or refuse extra time on a quiz, without leaving the
+  pending-requests dashboard
   As a teacher
-  I need to review a student's pending extension request and act on it
+  I need to review a student's pending extension request and act on it in a
+  modal dialog
 
   Background:
     Given the following "users" exist:
@@ -28,16 +30,17 @@ Feature: Teachers approve or deny quiz extension requests
     And I press "Submit request"
     And I log out
 
-  Scenario: A teacher approves an extension request and a quiz override is created
+  Scenario: A teacher approves an extension request in a modal and a quiz override is created
     Given I am on the "Quiz 1" "mod_quiz > View" page logged in as "teacher1"
     And I navigate to "Extension requests" in current page administration
     Then I should see "Student One"
-    When I click on "Review" "link" in the "Student One" "table_row"
-    And I should see "My laptop broke down."
-    And I set the following fields to these values:
-      | Comment (optional) | Approved, hope you feel better soon. |
-    And I press "Approve"
-    Then I should see "The request has been approved."
+    When I click on "Approve" "link" in the "Student One" "table_row"
+    And I should see "My laptop broke down." in the "Approve extension request" "dialogue"
+    And I set the field "Comment (optional)" in the "Approve extension request" "dialogue" to "Approved, hope you feel better soon."
+    And I click on "Approve" "button" in the "Approve extension request" "dialogue"
+    Then I should not see "Approve extension request"
+    And I should not see "Student One" in the "#local-quizextensionmanager-pending-table" "css_element"
+    And I should see "There are no pending extension requests for this quiz."
 
     When I am on the "Quiz 1" "mod_quiz > User overrides" page
     Then "Student One" "table_row" should exist
@@ -48,14 +51,13 @@ Feature: Teachers approve or deny quiz extension requests
     Then I should not see "Pending"
     And I should see "Approved"
 
-  Scenario: A teacher denies an extension request with a comment
+  Scenario: A teacher denies an extension request in a modal with a comment
     Given I am on the "Quiz 1" "mod_quiz > View" page logged in as "teacher1"
     And I navigate to "Extension requests" in current page administration
-    And I click on "Review" "link" in the "Student One" "table_row"
-    And I set the following fields to these values:
-      | Comment (optional) | Please provide documentation first. |
-    When I press "Deny"
-    Then I should see "The request has been denied."
+    When I click on "Deny" "link" in the "Student One" "table_row"
+    And I set the field "Comment (optional)" in the "Deny extension request" "dialogue" to "Please provide documentation first."
+    And I click on "Deny" "button" in the "Deny extension request" "dialogue"
+    Then I should not see "Deny extension request"
     And I should see "There are no pending extension requests for this quiz."
 
     And I log out

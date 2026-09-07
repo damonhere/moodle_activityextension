@@ -1,14 +1,17 @@
 # Moodle Plugin: Quiz Time Extension Requests
 
-**Version:** 0.3
+**Version:** 0.4
 
 ## Version History
 
+- **v0.4** (2026-09-07) — Added the teacher-interface streamlining
+  requirement below (AJAX-driven approve/deny, no full-page reload for
+  that action). Personal-use priority, not part of the original spec:
+  the plugin author uses this plugin themselves and wants the
+  highest-frequency teacher action (reviewing a pending request) to feel
+  fast and avoid navigating away from the pending-requests dashboard.
 - **v0.3** (2026-09-07) — Added version tracking to this document (this
-  section). No functional/requirement changes. A teacher-interface
-  streamlining feature (AJAX-driven approve/deny and dashboard, to reduce
-  full-page reloads) is under investigation for a future version; not yet
-  specced below.
+  section). No functional/requirement changes.
 - **v0.2** — Initial functional spec, as committed in "Added v0.02
   PluginSpec" (predates version tracking in this file; see git history for
   the diff from v0.1).
@@ -76,6 +79,14 @@ hand-rolling them.
 - Per course, the teacher/instructor can specify the default "quiz window" to be number of days past the quiz close date.
 - View a list of pending extension requests for quizzes in their course.
 - Approve or deny a request from the list, optionally editing the granted extra time and optionally opening the request to see more details.
+- **(v0.4)** Approving or denying a request from the pending-requests
+      dashboard happens **in a modal dialog, via AJAX, without a full page
+      reload** — the teacher stays on the dashboard and the acted-on row is
+      simply removed from the list on success. Implemented using Moodle's
+      `\core_form\dynamic_form` + `core_form/modalform` mechanism (no custom
+      AJAX endpoints). This applies to the per-quiz pending dashboard only;
+      the course-wide report page and the settings pages remain classic
+      full-page forms for now (out of scope for v0.4).
 - Approving a request automatically creates/updates a **user override**
       on the quiz (extending `timeclose` and/or `timelimit` and/or `attempts` for that user but only if those items deviate from the original).
 - Leave a comment/reason when approving or denying a request.

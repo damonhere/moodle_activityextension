@@ -15,8 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Teacher-facing pending-requests dashboard for a single quiz, with an
- * inline approve/deny detail view.
+ * Teacher-facing pending-requests dashboard for a single quiz.
+ *
+ * Approve/deny happens in a modal via AJAX (see PLUGIN_SPEC.md v0.4,
+ * classes/form/approve_form.php, classes/form/deny_form.php, and
+ * amd/src/manage.js) -- this page never navigates away for those actions,
+ * it only removes the acted-on row client-side.
  *
  * @package    local_quizextensionmanager
  * @copyright  2026 Damon Erickson <damon.erickson@gmail.com>
@@ -26,10 +30,8 @@
 require_once(__DIR__ . '/../../config.php');
 
 use local_quizextensionmanager\request_manager;
-use local_quizextensionmanager\form\approval_form;
 
 $cmid = required_param('cmid', PARAM_INT);
-$requestid = optional_param('requestid', 0, PARAM_INT);
 
 $cm = get_coursemodule_from_id('quiz', $cmid, 0, false, MUST_EXIST);
 $course = get_course($cm->course);
@@ -38,94 +40,69 @@ $context = context_module::instance($cm->id);
 require_login($course, false, $cm);
 require_capability('local/quizextensionmanager:manage', $context);
 
-$pageparams = ['cmid' => $cmid];
-if ($requestid) {
-    $pageparams['requestid'] = $requestid;
-}
-$PAGE->set_url('/local/quizextensionmanager/manage.php', $pageparams);
+$PAGE->set_url('/local/quizextensionmanager/manage.php', ['cmid' => $cmid]);
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('incourse');
 $title = get_string('page:manage', 'local_quizextensionmanager');
 $PAGE->set_title($title);
 $PAGE->set_heading($course->fullname);
 
-if ($requestid) {
-    $record = request_manager::get_request($requestid);
-    if ((int) $record->quizid !== (int) $cm->instance) {
-        throw new moodle_exception('invalidrecord', 'error');
-    }
-
-    $manageurl = new moodle_url('/local/quizextensionmanager/manage.php', ['cmid' => $cm->id]);
-
-    if ($record->status !== 'pending') {
-        // Already actioned (e.g. reloaded/back button) -- just show the queue again.
-        redirect($manageurl);
-    }
-
-    $mform = new approval_form(null, ['request' => $record, 'cmid' => $cm->id]);
-
-    if ($mform->is_cancelled()) {
-        redirect($manageurl);
-    } else if ($data = $mform->get_data()) {
-        $grantedattempts = trim((string) ($data->grantedattempts ?? ''));
-
-        $granted = [
-            'grantedtimeclose' => !empty($data->grantedtimeclose) ? (int) $data->grantedtimeclose : null,
-            'grantedtimelimit' => !empty($data->grantedtimelimit) ? (int) $data->grantedtimelimit : null,
-            'grantedattempts' => ($grantedattempts !== '') ? (int) $grantedattempts : null,
-        ];
-
-        if (!empty($data->approve)) {
-            request_manager::approve_request($record->id, $USER->id, $granted, $data->reviewreason ?? '');
-            $notice = get_string('notify:approved', 'local_quizextensionmanager');
-        } else {
-            request_manager::deny_request($record->id, $USER->id, $data->reviewreason ?? '');
-            $notice = get_string('notify:denied', 'local_quizextensionmanager');
-        }
-
-        redirect($manageurl, $notice, null, \core\notification::SUCCESS);
-    }
-
-    echo $OUTPUT->header();
-    echo $OUTPUT->heading($title);
-    $mform->display();
-    echo $OUTPUT->footer();
-    exit;
-}
+$PAGE->requires->js_call_amd('local_quizextensionmanager/manage', 'init');
 
 $pending = request_manager::get_pending_requests($cm->instance);
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading($title);
 
-if (empty($pending)) {
-    echo $OUTPUT->notification(get_string('nopendingrequests', 'local_quizextensionmanager'), 'info');
-} else {
-    $table = new html_table();
-    $table->head = [
-        get_string('table:student', 'local_quizextensionmanager'),
-        get_string('table:requestedtimeclose', 'local_quizextensionmanager'),
-        get_string('table:requestedtimelimit', 'local_quizextensionmanager'),
-        get_string('table:requestedattempts', 'local_quizextensionmanager'),
-        get_string('table:reason', 'local_quizextensionmanager'),
-        get_string('table:actions', 'local_quizextensionmanager'),
-    ];
-
-    foreach ($pending as $record) {
-        $student = core_user::get_user($record->userid);
-        $reviewurl = new moodle_url('/local/quizextensionmanager/manage.php', ['cmid' => $cm->id, 'requestid' => $record->id]);
-
-        $table->data[] = [
-            fullname($student),
-            !empty($record->requestedtimeclose) ? userdate($record->requestedtimeclose) : '-',
-            !empty($record->requestedtimelimit) ? format_time($record->requestedtimelimit) : '-',
-            $record->requestedattempts ?? '-',
-            format_text((string) $record->reason, FORMAT_PLAIN),
-            html_writer::link($reviewurl, get_string('action:review', 'local_quizextensionmanager')),
-        ];
-    }
-
-    echo html_writer::table($table);
+$emptyattributes = ['id' => 'local-quizextensionmanager-empty', 'class' => 'alert alert-info'];
+if (!empty($pending)) {
+    $emptyattributes['hidden'] = 'hidden';
 }
+echo html_writer::div(get_string('nopendingrequests', 'local_quizextensionmanager'), '', $emptyattributes);
+
+$tableattributes = ['id' => 'local-quizextensionmanager-pending-table'];
+if (empty($pending)) {
+    $tableattributes['hidden'] = 'hidden';
+}
+echo html_writer::start_tag('div', $tableattributes);
+
+$table = new html_table();
+$table->head = [
+    get_string('table:student', 'local_quizextensionmanager'),
+    get_string('table:requestedtimeclose', 'local_quizextensionmanager'),
+    get_string('table:requestedtimelimit', 'local_quizextensionmanager'),
+    get_string('table:requestedattempts', 'local_quizextensionmanager'),
+    get_string('table:reason', 'local_quizextensionmanager'),
+    get_string('table:actions', 'local_quizextensionmanager'),
+];
+
+foreach ($pending as $record) {
+    $student = core_user::get_user($record->userid);
+
+    $actions = html_writer::link(
+        '#',
+        get_string('action:approve', 'local_quizextensionmanager'),
+        ['data-action' => 'approve-request', 'data-requestid' => $record->id, 'class' => 'btn btn-sm btn-primary mr-1']
+    ) . html_writer::link(
+        '#',
+        get_string('action:deny', 'local_quizextensionmanager'),
+        ['data-action' => 'deny-request', 'data-requestid' => $record->id, 'class' => 'btn btn-sm btn-secondary']
+    );
+
+    $row = new html_table_row([
+        fullname($student),
+        !empty($record->requestedtimeclose) ? userdate($record->requestedtimeclose) : '-',
+        !empty($record->requestedtimelimit) ? format_time($record->requestedtimelimit) : '-',
+        $record->requestedattempts ?? '-',
+        format_text((string) $record->reason, FORMAT_PLAIN),
+        $actions,
+    ]);
+    $row->attributes['data-requestid'] = $record->id;
+
+    $table->data[] = $row;
+}
+
+echo html_writer::table($table);
+echo html_writer::end_tag('div');
 
 echo $OUTPUT->footer();

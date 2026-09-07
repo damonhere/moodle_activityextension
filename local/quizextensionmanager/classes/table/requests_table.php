@@ -151,16 +151,25 @@ class requests_table extends \table_sql {
     /**
      * Render the actions column.
      *
+     * Only pending requests are actionable, and approving/denying happens
+     * in a modal on the per-quiz dashboard (see manage.php and
+     * PLUGIN_SPEC.md v0.4), so this links there rather than to a per-request
+     * detail view.
+     *
      * @param \stdClass $row
      * @return string
      */
     public function col_actions($row) {
+        if ($row->status !== 'pending') {
+            return '-';
+        }
+
         $cm = get_coursemodule_from_instance('quiz', $row->quizid, 0, false, IGNORE_MISSING);
         if (!$cm) {
             return '';
         }
 
-        $url = new \moodle_url('/local/quizextensionmanager/manage.php', ['cmid' => $cm->id, 'requestid' => $row->id]);
+        $url = new \moodle_url('/local/quizextensionmanager/manage.php', ['cmid' => $cm->id]);
         return \html_writer::link($url, get_string('table:view', 'local_quizextensionmanager'));
     }
 }

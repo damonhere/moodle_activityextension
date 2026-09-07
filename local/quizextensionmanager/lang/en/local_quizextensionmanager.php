@@ -164,8 +164,11 @@ $string['action:approve'] = 'Approve';
 $string['action:deny'] = 'Deny';
 $string['action:edit'] = 'Edit';
 $string['action:cancel'] = 'Cancel';
-$string['action:review'] = 'Review';
 $string['action:newrequest'] = 'New request';
+
+// Modal titles (AJAX approve/deny, see PLUGIN_SPEC.md v0.4).
+$string['modal:approvetitle'] = 'Approve extension request';
+$string['modal:denytitle'] = 'Deny extension request';
 
 // Tables.
 $string['table:quiz'] = 'Quiz';

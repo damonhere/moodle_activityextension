@@ -47,6 +47,29 @@ Two deliberate points worth knowing:
   a request never silently clobbers a `timeopen` or `password` a teacher
   set through Moodle's own override screen, independent of this plugin.
 
+## Teacher dashboard: AJAX approve/deny
+
+Per `PLUGIN_SPEC.md` v0.4, approving or denying a request from the per-quiz
+pending-requests dashboard (`manage.php`) happens in a modal via AJAX, with
+no full page reload -- the acted-on row is simply removed from the table on
+success. This uses Moodle's stock `\core_form\dynamic_form` +
+`core_form/modalform` mechanism (`classes/form/approve_form.php`,
+`classes/form/deny_form.php`, `amd/src/manage.js`), which submits through
+core's own generic `core_form_dynamic_form` webservice -- this plugin does
+not define any AJAX endpoints of its own. The course-wide report page and
+the settings pages are unchanged classic full-page forms; only the
+highest-frequency teacher action (reviewing one pending request) was
+converted.
+
+**Build step required**: `amd/src/manage.js` is ES6 source and must be
+built to `amd/build/manage.min.js` (via Moodle's Grunt tooling --
+`npm install` then `grunt amd`, or `grunt watch` while iterating) before
+Moodle can load it. This was written and verified against the real Moodle
+5.2.2 core source (`lib/form/classes/dynamic_form.php`,
+`lib/form/amd/src/modalform.js`, and the `admin/tool/dataprivacy/classes/form/contactdpo.php`
+example) but has not been built or run in this environment (no Node/Grunt
+available here).
+
 ## Installation
 
 1. Copy (or symlink) this directory to `local/quizextensionmanager` in your
@@ -58,9 +81,14 @@ Two deliberate points worth knowing:
    ```bash
    php admin/cli/upgrade.php --non-interactive
    ```
-4. Configure site-wide defaults at **Site administration > Plugins >
+4. Build the AMD JavaScript (see "Teacher dashboard" above):
+   ```bash
+   npm install
+   grunt amd
+   ```
+5. Configure site-wide defaults at **Site administration > Plugins >
    Local plugins > Quiz extension manager**.
-5. Assign the `local/quizextensionmanager:request` and
+6. Assign the `local/quizextensionmanager:request` and
    `local/quizextensionmanager:manage` capabilities as needed (they default
    to the Student and Teacher/Editing teacher/Manager archetypes
    respectively).
@@ -89,11 +117,15 @@ and uploaded documentation files) and implements a full
   submitting/editing/cancelling a request and being blocked from a
   duplicate pending one (`request_workflow.feature`), a teacher approving
   (verified via Moodle's own "User overrides" page) or denying a request
-  (`approval_workflow.feature`), and a teacher enabling/disabling extension
-  requests for a quiz (`settings.feature`). Written against, and verified
+  via the AJAX modal (`approval_workflow.feature`, tagged `@javascript` --
+  needs a real browser driver, e.g. Chromedriver/Selenium, since the modal
+  flow depends on JS), and a teacher enabling/disabling extension requests
+  for a quiz (`settings.feature`). Written against, and verified
   step-by-step against, the real Moodle 5.2.2 core source and its own
   `mod_quiz` Behat suite, but not executed end-to-end in this environment
   (no PHP/Selenium available) -- run
   `php admin/tool/behat/cli/init.php` then
   `vendor/bin/behat --tags=local_quizextensionmanager` once in a real dev
-  environment.
+  environment (the AMD build step above must be done first, or the
+  `approval_workflow.feature` scenarios will fail with no JS behaviour to
+  drive).

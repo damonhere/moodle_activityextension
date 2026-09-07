@@ -2,6 +2,33 @@
 
 All notable changes to `local_quizextensionmanager` are documented here.
 
+## [0.3.0] - 2026-09-07
+
+### Added
+
+- AJAX approve/deny for the per-quiz pending-requests dashboard
+  (`manage.php`), per `PLUGIN_SPEC.md` v0.4: `classes/form/approve_form.php`
+  and `classes/form/deny_form.php` (both `\core_form\dynamic_form`
+  subclasses) and `amd/src/manage.js`, using Moodle's stock
+  `core_form/modalform` + `core_form_dynamic_form` webservice -- no custom
+  AJAX endpoints of our own. Approving or denying now happens in a modal;
+  the acted-on row is removed from the table client-side and a toast
+  confirms the outcome, with no full page reload.
+
+### Changed
+
+- `manage.php`: the pending-requests table's per-row action is now
+  `Approve`/`Deny` buttons that open the modals above, instead of a
+  `Review` link to a full-page form.
+- `tests/behat/approval_workflow.feature`: updated to drive the new modal
+  UI and tagged `@javascript` (a real browser driver is required now that
+  this flow depends on JS).
+
+### Removed
+
+- `classes/form/approval_form.php`: superseded by `approve_form.php` /
+  `deny_form.php`.
+
 ## [0.2.1] - 2026-09-07
 
 ### Changed
