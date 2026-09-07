@@ -1,5 +1,19 @@
 # Moodle Plugin: Quiz Time Extension Requests
 
+**Version:** 0.3
+
+## Version History
+
+- **v0.3** (2026-09-07) — Added version tracking to this document (this
+  section). No functional/requirement changes. A teacher-interface
+  streamlining feature (AJAX-driven approve/deny and dashboard, to reduce
+  full-page reloads) is under investigation for a future version; not yet
+  specced below.
+- **v0.2** — Initial functional spec, as committed in "Added v0.02
+  PluginSpec" (predates version tracking in this file; see git history for
+  the diff from v0.1).
+- **v0.1** — First draft, as committed in "Added v0.01 PluginSpec".
+
 ## Overview
 
 A Moodle plugin that lets students request a time extension on a quiz
