@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/quizextensionmanager/db" VERSION="20260906" COMMENT="XMLDB file for Moodle local/quizextensionmanager.
+    NOTE: the spec's conceptual tables 'quiz_settings' and 'course_settings' are stored here as
+    'quizextensionmanager_quizset' and 'quizextensionmanager_crsset' respectively -- Moodle limits
+    unprefixed table names to 28 characters (for Oracle/cross-DB compatibility), and
+    'quizextensionmanager_quiz_settings' / 'quizextensionmanager_course_settings' both exceed that,
+    so the suffixes are abbreviated. Column lists are unchanged from the spec."
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="quizextensionmanager_request" COMMENT="One row per student quiz time-extension request.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="quizid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Foreign key to quiz.id."/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Denormalized from quiz.course for cheaper course-level report queries."/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Foreign key to user.id. The requesting student."/>
+        <FIELD NAME="requestedtimeclose" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Nullable. New close date/time being requested."/>
+        <FIELD NAME="requestedtimelimit" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Nullable. New time limit in seconds, matching quiz.timelimit units."/>
+        <FIELD NAME="requestedattempts" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Nullable. New max attempts requested."/>
+        <FIELD NAME="currenttimeclose" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Snapshot of quiz.timeclose at time of request."/>
+        <FIELD NAME="currenttimelimit" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Snapshot of quiz.timelimit at time of request."/>
+        <FIELD NAME="currentattempts" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Snapshot of quiz.attempts at time of request."/>
+        <FIELD NAME="reason" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Student-supplied free text reason for the request."/>
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" DEFAULT="pending" COMMENT="One of: pending, approved, denied, cancelled."/>
+        <FIELD NAME="grantedtimeclose" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Nullable. Close date/time actually granted, may differ from requested."/>
+        <FIELD NAME="grantedtimelimit" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Nullable. Time limit actually granted, may differ from requested."/>
+        <FIELD NAME="grantedattempts" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Nullable. Max attempts actually granted, may differ from requested."/>
+        <FIELD NAME="quizoverrideid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Soft link to quiz_overrides.id. Used to find/update the single override row per user per quiz."/>
+        <FIELD NAME="reviewerid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Foreign key to user.id. Teacher who actioned the request, nullable while pending."/>
+        <FIELD NAME="reviewreason" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Optional comment/reason left by the reviewer."/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timereviewed" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Nullable. Set when approved/denied."/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="quizid" TYPE="foreign" FIELDS="quizid" REFTABLE="quiz" REFFIELDS="id"/>
+        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="reviewerid" TYPE="foreign" FIELDS="reviewerid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="status" UNIQUE="false" FIELDS="status"/>
+        <INDEX NAME="quizoverrideid" UNIQUE="false" FIELDS="quizoverrideid"/>
+        <INDEX NAME="quizid-userid" UNIQUE="false" FIELDS="quizid, userid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="quizextensionmanager_quizset" COMMENT="Per-quiz configuration for extension requests (spec: quiz_settings).">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="quizid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Foreign key to quiz.id."/>
+        <FIELD NAME="enabled" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" DEFAULT="1" COMMENT="Whether extension requests are allowed for this quiz."/>
+        <FIELD NAME="requirereason" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" DEFAULT="0" COMMENT="Whether a reason is required to submit a request."/>
+        <FIELD NAME="documentationmode" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" DEFAULT="none" COMMENT="One of: none, optional, required."/>
+        <FIELD NAME="allowedfiletypes" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Allowed documentation file types, Moodle filetypes util format."/>
+        <FIELD NAME="requestwindowtype" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" DEFAULT="days-after-close" COMMENT="One of: days-after-close, fixed-date, until-course-end."/>
+        <FIELD NAME="requestwindowdays" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Nullable. Used when requestwindowtype = days-after-close."/>
+        <FIELD NAME="requestwindowdate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Nullable timestamp. Used when requestwindowtype = fixed-date."/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="quizid" TYPE="foreign-unique" FIELDS="quizid" REFTABLE="quiz" REFFIELDS="id" COMMENT="One settings row per quiz."/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="quizextensionmanager_crsset" COMMENT="Per-course configuration for extension requests (spec: course_settings).">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Foreign key to course.id."/>
+        <FIELD NAME="maxrequestsperstudent" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Nullable = unlimited. Max approved requests allowed per student in this course."/>
+        <FIELD NAME="defaultrequestwindowdays" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Default days-after-close request window used when a quiz does not override it."/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="courseid" TYPE="foreign-unique" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" COMMENT="One settings row per course."/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>

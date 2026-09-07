@@ -1,0 +1,53 @@
+# Changelog
+
+All notable changes to `local_quizextensionmanager` are documented here.
+
+## [0.2.0] - 2026-09-06
+
+### Added
+
+- `classes/eligibility.php` / `classes/eligibility_result.php`: full
+  eligibility checks (per-quiz enabled flag, quiz open state, request
+  window per `requestwindowtype`, duplicate-pending prevention, course
+  quota counted on approved requests only).
+- `classes/request_manager.php`: request CRUD and state transitions
+  (create/update/cancel/approve/deny), plus read helpers used by the
+  student and teacher pages.
+- `classes/override_manager.php`: applies an approved request to
+  `{quiz_overrides}`, writing only fields that deviate from the quiz's own
+  settings, updating rather than duplicating the single per-user override
+  row. See the README note below on manual verification against real
+  Moodle 5.2 core.
+- `classes/notification_manager.php` and `db/messages.php`: approved/denied
+  message-API notifications with admin-configurable templates and
+  built-in defaults.
+- `classes/form/request_form.php`, `approval_form.php`,
+  `quiz_settings_form.php`, `course_settings_form.php`.
+- `classes/table/requests_table.php`: course-wide report table.
+- Top-level pages: `request.php`, `myrequests.php`, `manage.php`,
+  `report.php`, `quizsettings.php`, `coursesettings.php`.
+- `local_quizextensionmanager_extend_settings_navigation()` in `lib.php`,
+  adding capability-gated navigation entries for the manage/settings and
+  report/course-settings pages.
+- `classes/output/extension_link.php` and `local_quizextensionmanager_pluginfile()`
+  fully implemented (previously stubs).
+- PHPUnit coverage: `tests/eligibility_test.php`,
+  `tests/request_manager_test.php`, `tests/override_manager_test.php`.
+- Many new language strings for the above.
+
+## [0.1.0] - 2026-09-06
+
+### Added
+
+- Initial plugin scaffold: `version.php`, `db/install.xml` (request,
+  per-quiz and per-course settings tables), `db/access.php` capabilities
+  (`request`, `manage`), `db/upgrade.php` stub.
+- Full privacy provider (`classes/privacy/provider.php`) covering the
+  request table and the `documentation` file area.
+- `lib.php` with a `local_quizextensionmanager_pluginfile()` stub for
+  serving documentation uploads.
+- `settings.php` with site-wide defaults (max extension, reason required,
+  documentation mode, allowed file types, notification templates).
+- `classes/output/extension_link.php` stub, the integration point used by
+  `quizaccess_quizextensionmanager`.
+- Smoke test, README, and initial language strings.
