@@ -2,6 +2,17 @@
 
 All notable changes to `local_quizextensionmanager` are documented here.
 
+## [0.3.3] - 2026-09-07
+
+### Fixed
+
+- `classes/output/extension_link.php`: no longer shows the student-facing
+  "Request extension" entry point (or its pending/view-requests variants)
+  on the quiz view page to anyone holding
+  `local/quizextensionmanager:manage` in that context. Site admins bypass
+  normal capability checks entirely, so a teacher/admin viewing the quiz
+  page was seeing the student-facing link too.
+
 ## [0.3.2] - 2026-09-07
 
 ### Changed

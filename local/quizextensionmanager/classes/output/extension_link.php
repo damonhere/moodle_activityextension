@@ -41,7 +41,11 @@ class extension_link {
      * see one (e.g. no capability, or nothing useful to show).
      *
      * Logic:
-     *  - Requires local/quizextensionmanager:request in the quiz's module context.
+     *  - Never shown to anyone holding local/quizextensionmanager:manage in
+     *    the quiz's module context (teachers, and admins -- who bypass
+     *    normal capability checks and would otherwise also pass the
+     *    :request check below despite not being students).
+     *  - Otherwise requires local/quizextensionmanager:request in that context.
      *  - If the user already has a pending request for this quiz, shows a
      *    link to myrequests.php instead of a new-request link (a pending
      *    request blocks submitting another one).
@@ -70,6 +74,15 @@ class extension_link {
         }
 
         $context = \context_module::instance($cm->id);
+
+        // Never show the student-facing entry point to someone who can
+        // manage requests here (teachers, and admins -- who bypass normal
+        // capability checks entirely, so would otherwise also pass the
+        // :request check below even though they aren't students).
+        if (has_capability('local/quizextensionmanager:manage', $context, $userid)) {
+            return '';
+        }
+
         if (!has_capability('local/quizextensionmanager:request', $context, $userid)) {
             return '';
         }

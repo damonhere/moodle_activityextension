@@ -1,9 +1,18 @@
 # Moodle Plugin: Quiz Time Extension Requests
 
-**Version:** 0.6
+**Version:** 0.7
 
 ## Version History
 
+- **v0.7** (2026-09-07) — `extension_link::render()` no longer shows the
+  student-facing "Request extension" entry point (or its status variants)
+  on the quiz view page to anyone holding `local/quizextensionmanager:manage`
+  in that context. Flagged from testing: site admins bypass normal
+  capability checks entirely, so a teacher/admin viewing the quiz page was
+  seeing the student-facing link too, which read as confusing/wrong on
+  what should be a teacher-facing view. See `ROADMAP.md` for the related,
+  not-yet-built idea of showing teachers a pending-request count/link in
+  its place.
 - **v0.6** (2026-09-07) — Replaced the student request form's "requested
   new number of attempts" free-text field with a yes/no checkbox ("I need
   an additional attempt at this quiz"). Flagged from testing: a raw number
