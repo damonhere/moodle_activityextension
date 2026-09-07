@@ -1,6 +1,6 @@
 # Moodle Plugin: Quiz Time Extension Requests
 
-**Version:** 0.8
+**Version:** 0.9
 
 _Kept in lockstep with `local_quizextensionmanager`'s `$plugin->release` in
 `version.php` -- every bump here should bump that too, even for a
@@ -10,6 +10,13 @@ it changes far less often and isn't what this spec version is tracking.)_
 
 ## Version History
 
+- **v0.9** (2026-09-07) — Teachers can now view a request's uploaded
+  supporting documentation (if any) directly in the approve/deny modals --
+  flagged as a gap when testing the AJAX approve/deny workflow: the
+  student-side upload existed, but there was no UI anywhere for a teacher
+  to actually see what was uploaded. Added
+  `request_manager::get_documentation_html()`, wired into both
+  `approve_form.php` and `deny_form.php`.
 - **v0.8** (2026-09-07) — Fixed a real bug hit on a live site: submitting a
   request and landing on `myrequests.php?cmid=...` threw "Coding error
   detected... The course you passed to $PAGE->set_cm does not correspond

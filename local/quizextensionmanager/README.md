@@ -70,6 +70,17 @@ Moodle can load it. This was written and verified against the real Moodle
 example) but has not been built or run in this environment (no Node/Grunt
 available here).
 
+**`amd/build/manage.min.js` must be committed to this repository**, same
+as any other Moodle plugin -- it's a normal file that ships with the
+plugin, not a gitignored artifact. This matters in particular if you're
+deploying via something like `sync-to-moodle.sh` (rsync with `--delete`):
+if the built file only ever exists in the deployed copy and never gets
+copied back into this checkout and committed, the next sync will delete
+it, and Moodle will throw `Uncaught Error: No define call for
+local_quizextensionmanager/manage` in the browser console until it's
+rebuilt. Whenever `amd/src/manage.js` changes: rebuild, copy
+`amd/build/` back into this checkout, commit it, then redeploy.
+
 ## Installation
 
 1. Copy (or symlink) this directory to `local/quizextensionmanager` in your

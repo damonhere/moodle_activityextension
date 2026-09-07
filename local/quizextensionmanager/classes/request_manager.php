@@ -323,4 +323,47 @@ class request_manager {
 
         return $record;
     }
+
+    /**
+     * Build download links for any supporting documentation uploaded with a
+     * request, for display to whoever is reviewing it.
+     *
+     * Files live in the 'documentation' filearea of the local_quizextensionmanager
+     * component, keyed by the request's id as itemid (see lib.php's
+     * local_quizextensionmanager_pluginfile() for the matching access check).
+     *
+     * @param int $requestid the request id.
+     * @param \context $context the request's quiz module context.
+     * @return string HTML (one link per file, or '' if none were uploaded).
+     */
+    public static function get_documentation_html(int $requestid, \context $context): string {
+        $fs = get_file_storage();
+        $files = $fs->get_area_files(
+            $context->id,
+            'local_quizextensionmanager',
+            'documentation',
+            $requestid,
+            'filename',
+            false
+        );
+
+        if (empty($files)) {
+            return '';
+        }
+
+        $links = [];
+        foreach ($files as $file) {
+            $url = \moodle_url::make_pluginfile_url(
+                $file->get_contextid(),
+                'local_quizextensionmanager',
+                'documentation',
+                $file->get_itemid(),
+                $file->get_filepath(),
+                $file->get_filename()
+            );
+            $links[] = \html_writer::link($url, $file->get_filename());
+        }
+
+        return implode(\html_writer::empty_tag('br'), $links);
+    }
 }

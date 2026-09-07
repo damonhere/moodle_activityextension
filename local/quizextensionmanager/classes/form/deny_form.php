@@ -84,6 +84,16 @@ class deny_form extends dynamic_form {
             format_text((string) $request->reason, FORMAT_PLAIN)
         );
 
+        $documentationhtml = request_manager::get_documentation_html($request->id, $this->get_request_context());
+        if ($documentationhtml !== '') {
+            $mform->addElement(
+                'static',
+                'documentationdisplay',
+                get_string('form:documentation', 'local_quizextensionmanager'),
+                $documentationhtml
+            );
+        }
+
         $mform->addElement(
             'textarea',
             'reviewreason',

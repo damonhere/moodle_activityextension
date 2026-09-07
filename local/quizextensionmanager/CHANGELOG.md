@@ -5,6 +5,26 @@ All notable changes to `local_quizextensionmanager` are documented here.
 Starting at 0.8, this release number is kept in lockstep with
 `PLUGIN_SPEC.md`'s version (previously they'd drifted to 0.7 vs. 0.3.3).
 
+## [0.9] - 2026-09-07
+
+### Added
+
+- `classes/request_manager.php`: `get_documentation_html()`, building
+  download links for a request's uploaded supporting documentation.
+- Wired into `approve_form.php` and `deny_form.php`, so a teacher
+  reviewing a request can now actually see what was uploaded -- confirmed
+  as a real gap while testing the AJAX approve/deny workflow (the
+  student-side upload existed with no corresponding way to view it).
+
+### Fixed
+
+- README: documented that `amd/build/*.min.js` must be committed to this
+  repository like any other plugin file, after a real incident where the
+  built AMD module only ever existed in a deployed copy and was silently
+  deleted by a subsequent `rsync --delete`-based sync, breaking the
+  approve/deny modals with "Uncaught Error: No define call for
+  local_quizextensionmanager/manage" until rebuilt.
+
 ## [0.8] - 2026-09-07
 
 ### Fixed
