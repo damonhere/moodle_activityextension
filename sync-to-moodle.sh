@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 #
 # Sync the quizextensionmanager plugin pair from this git checkout into a
-# real Moodle codebase, and fix ownership so the web server (www-data) can
-# read the copied files. This exists because symlinking the plugin in
-# instead of copying it broke several build tools (ESLint's config
+# real Moodle codebase, and fix ownership to match how this VM's production
+# server is configured (root:root). This exists because symlinking the
+# plugin in instead of copying it broke several build tools (ESLint's config
 # resolution, its Babel parser's module resolution, and Grunt/Rollup's
 # AMD module-name computation) -- all of them compute paths relative to
 # the file's *real* location, which a symlink pointing outside the Moodle
 # tree defeats.
 #
-# Run this as root (it chowns the copied files to damon:www-data).
+# Run this as root (it chowns the copied files to root:root).
 # Re-run it after every `git pull` in this checkout to propagate changes.
 #
 # Usage: ./sync-to-moodle.sh
@@ -19,7 +19,7 @@ set -euo pipefail
 # Edit these if your checkout or Moodle install live somewhere else.
 SRC_ROOT="/home/damon/moodledev/moodle_activityextension"
 MOODLE_ROOT="/var/www/html/moodle/public"
-OWNER="damon:www-data"
+OWNER="root:root"
 
 if [ "$(id -u)" -ne 0 ]; then
     echo "This script must be run as root (it chowns files to $OWNER)." >&2
