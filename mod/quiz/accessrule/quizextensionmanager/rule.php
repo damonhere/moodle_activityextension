@@ -27,14 +27,21 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+use mod_quiz\local\access_rule_base;
+use mod_quiz\quiz_settings;
+
 /**
  * A rule implementing the "Request extension" entry point.
  *
  * Deliberately does NOT override prevent_access() or any other gating
  * method -- this subplugin must never restrict quiz attempts, it only adds
  * server-rendered content to mod/quiz/view.php via description().
+ *
+ * Extends \mod_quiz\local\access_rule_base -- confirmed against the real
+ * Moodle 5.2.2 core source (the base class was renamed/namespaced from the
+ * older global quiz_access_rule_base at some point before 5.2).
  */
-class quizaccess_quizextensionmanager extends quiz_access_rule_base {
+class quizaccess_quizextensionmanager extends access_rule_base {
 
     /**
      * Return an instance of this rule for the given quiz, or null if this
@@ -43,13 +50,13 @@ class quizaccess_quizextensionmanager extends quiz_access_rule_base {
      * This rule always applies (it only renders an optional UI link), so it
      * unconditionally returns an instance.
      *
-     * @param quiz $quizobj information about the quiz in question.
+     * @param quiz_settings $quizobj information about the quiz in question.
      * @param int $timenow the time that should be considered as "now".
      * @param bool $canignoretimelimits whether the current user is exempt from
      *      time limits and always sees exact times.
-     * @return quiz_access_rule_base|null the rule, or null if it does not apply.
+     * @return access_rule_base|null the rule, or null if it does not apply.
      */
-    public static function make($quizobj, $timenow, $canignoretimelimits) {
+    public static function make(quiz_settings $quizobj, $timenow, $canignoretimelimits) {
         return new self($quizobj, $timenow);
     }
 

@@ -25,13 +25,13 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'quizaccess_quizextensionmanager';
-$plugin->version   = 2026090600;
+$plugin->version   = 2026090801;
 $plugin->requires  = 2026042000; // Moodle 5.2.
 $plugin->maturity  = MATURITY_ALPHA;
-$plugin->release   = '0.1.0';
+$plugin->release   = '0.1.1';
 
 // This subplugin is a thin UI entry point only; all business logic lives in
 // local_quizextensionmanager, which must be installed first.
 $plugin->dependencies = [
-    'local_quizextensionmanager' => 2026090600,
+    'local_quizextensionmanager' => 2026090800,
 ];
