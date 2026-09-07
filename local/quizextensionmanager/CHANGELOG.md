@@ -2,6 +2,32 @@
 
 All notable changes to `local_quizextensionmanager` are documented here.
 
+## [0.2.1] - 2026-09-07
+
+### Changed
+
+- `classes/override_manager.php`: rewritten to delegate to mod_quiz's own
+  `\mod_quiz\local\override_manager::save_override()` (verified against the
+  real Moodle 5.2.2 core source) instead of writing to `{quiz_overrides}`
+  directly. Also fixes a data-loss risk the naive version of this delegation
+  would have introduced: an existing override's `timeopen`/`password` are
+  now carried forward on update so approving a request never resets fields
+  this plugin doesn't manage. See the README's "`quiz_overrides`
+  integration" section.
+- `db/messages.php`: fixed use of `MESSAGE_DEFAULT_LOGGEDIN` /
+  `MESSAGE_DEFAULT_LOGGEDOFF`, which do not exist in Moodle 5.2.2 (a fatal
+  PHP 8 `Error` on an undefined constant), replaced with the correct
+  `MESSAGE_DEFAULT_ENABLED`.
+
+### Added
+
+- `tests/behat/request_workflow.feature`, `approval_workflow.feature`,
+  `settings.feature`: Behat coverage for the main UI flows -- a student
+  submitting/editing/cancelling a request and being blocked from a
+  duplicate pending one, a teacher approving (verified via the native
+  "User overrides" page) or denying a request, and a teacher toggling
+  per-quiz extension requests on/off.
+
 ## [0.2.0] - 2026-09-06
 
 ### Added

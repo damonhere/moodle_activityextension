@@ -80,3 +80,20 @@ This plugin stores personal data (requests, reasons, reviewer comments,
 and uploaded documentation files) and implements a full
 `\core_privacy\local\request\plugin\provider`. See
 `classes/privacy/provider.php`.
+
+## Testing
+
+- `tests/*.php` — PHPUnit coverage for eligibility rules, request state
+  transitions, and override creation/update on approval.
+- `tests/behat/*.feature` — Behat coverage for the main UI flows: a student
+  submitting/editing/cancelling a request and being blocked from a
+  duplicate pending one (`request_workflow.feature`), a teacher approving
+  (verified via Moodle's own "User overrides" page) or denying a request
+  (`approval_workflow.feature`), and a teacher enabling/disabling extension
+  requests for a quiz (`settings.feature`). Written against, and verified
+  step-by-step against, the real Moodle 5.2.2 core source and its own
+  `mod_quiz` Behat suite, but not executed end-to-end in this environment
+  (no PHP/Selenium available) -- run
+  `php admin/tool/behat/cli/init.php` then
+  `vendor/bin/behat --tags=local_quizextensionmanager` once in a real dev
+  environment.
