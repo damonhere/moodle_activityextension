@@ -90,10 +90,29 @@ class request_form extends \moodleform {
             get_string('form:requestedtimelimit', 'local_quizextensionmanager'),
             ['optional' => true]
         );
+        // Default the (initially unchecked) value to the quiz's own current
+        // time limit rather than 0, so it matches the "Current time limit"
+        // display above instead of reading as "requesting a 0-minute limit".
+        // request.php overrides this via set_data() when editing an existing
+        // request that already specified a requestedtimelimit.
+        $mform->setDefault('requestedtimelimit', $quiz->timelimit);
 
-        $mform->addElement('text', 'requestedattempts', get_string('form:requestedattempts', 'local_quizextensionmanager'));
-        $mform->setType('requestedattempts', PARAM_RAW);
-        $mform->addHelpButton('requestedattempts', 'form:requestedattempts', 'local_quizextensionmanager');
+        // A plain "requested new number of attempts" text field was
+        // ambiguous -- students couldn't tell whether it meant the new
+        // total or how many extra attempts they needed. A yes/no checkbox
+        // means the same thing either way; request.php converts it to a
+        // total (current + 1) before storing, so the rest of the plugin's
+        // "total attempts" model (matching quiz.attempts/quiz_overrides
+        // conventions) is unchanged. Not shown if the quiz already allows
+        // unlimited attempts, since requesting "one more" is meaningless
+        // there.
+        if (!empty($quiz->attempts)) {
+            $mform->addElement(
+                'advcheckbox',
+                'needsadditionalattempt',
+                get_string('form:needsadditionalattempt', 'local_quizextensionmanager')
+            );
+        }
 
         $requirereason = $quizset->requirereason ?? get_config('local_quizextensionmanager', 'reasonrequired');
         $mform->addElement(
@@ -147,14 +166,10 @@ class request_form extends \moodleform {
 
         $samecl = empty($data['requestedtimeclose']) || (int) $data['requestedtimeclose'] === (int) $quiz->timeclose;
         $sametl = empty($data['requestedtimelimit']) || (int) $data['requestedtimelimit'] === (int) $quiz->timelimit;
+        $sameatt = empty($data['needsadditionalattempt']);
 
-        $requestedattempts = trim((string) ($data['requestedattempts'] ?? ''));
-        $sameatt = ($requestedattempts === '') || ((int) $requestedattempts === (int) $quiz->attempts);
-
-        if ($requestedattempts !== '' && !is_numeric($requestedattempts)) {
-            $errors['requestedattempts'] = get_string('error:invalidnumber', 'local_quizextensionmanager');
-        } else if ($samecl && $sametl && $sameatt) {
-            $errors['requestedattempts'] = get_string('error:nochange', 'local_quizextensionmanager');
+        if ($samecl && $sametl && $sameatt) {
+            $errors['reason'] = get_string('error:nochange', 'local_quizextensionmanager');
         }
 
         $requirereason = $quizset->requirereason ?? get_config('local_quizextensionmanager', 'reasonrequired');

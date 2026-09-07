@@ -1,9 +1,28 @@
 # Moodle Plugin: Quiz Time Extension Requests
 
-**Version:** 0.4
+**Version:** 0.6
 
 ## Version History
 
+- **v0.6** (2026-09-07) — Replaced the student request form's "requested
+  new number of attempts" free-text field with a yes/no checkbox ("I need
+  an additional attempt at this quiz"). Flagged from testing: a raw number
+  was ambiguous between "the new total I want" and "how many extra I
+  need". The checkbox is converted to a total (current + 1) before
+  storage, so `requestedattempts`/`grantedattempts` still mean "new total
+  attempts" everywhere else in the plugin (matching how
+  `quiz.attempts`/`quiz_overrides.attempts` themselves work) -- only the
+  student-facing form's presentation changed. The teacher's approve form
+  still shows and grants an absolute total (not "+1/+2"), but now also
+  shows the quiz's current attempts total alongside it, so the teacher can
+  see the actual difference themselves rather than reasoning about a bare
+  number with nothing to compare it to.
+- **v0.5** (2026-09-07) — The requested/granted time limit fields (student
+  request form and teacher approve form) now default to the quiz's current
+  time limit instead of a bare `0` while unchecked, so it reads as "here's
+  the current value" rather than "requesting a 0-minute limit". Flagged
+  from testing on a real site; purely a display fix, the actual submitted
+  meaning of "leave unchecked" (no change requested) is unchanged.
 - **v0.4** (2026-09-07) — Added the teacher-interface streamlining
   requirement below (AJAX-driven approve/deny, no full-page reload for
   that action). Personal-use priority, not part of the original spec:

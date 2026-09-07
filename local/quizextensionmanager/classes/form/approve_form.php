@@ -55,6 +55,16 @@ class approve_form extends dynamic_form {
     }
 
     /**
+     * Look up the quiz this request belongs to.
+     *
+     * @return \stdClass
+     */
+    protected function get_quiz(): \stdClass {
+        global $DB;
+        return $DB->get_record('quiz', ['id' => $this->get_request()->quizid], '*', MUST_EXIST);
+    }
+
+    /**
      * Resolve the quiz module context for this request's quiz.
      *
      * @return context_module
@@ -97,6 +107,15 @@ class approve_form extends dynamic_form {
             get_string('form:grantedtimelimit', 'local_quizextensionmanager'),
             ['optional' => true]
         );
+        // Shown so the teacher can compare the current total against the
+        // granted total below and see the actual difference, rather than
+        // just a bare number with nothing to compare it to.
+        $mform->addElement(
+            'static',
+            'currentattemptsdisplay',
+            get_string('form:currentattempts', 'local_quizextensionmanager'),
+            !empty($this->get_quiz()->attempts) ? $this->get_quiz()->attempts : get_string('unlimited', 'local_quizextensionmanager')
+        );
         $mform->addElement('text', 'grantedattempts', get_string('form:grantedattempts', 'local_quizextensionmanager'));
         $mform->setType('grantedattempts', PARAM_RAW);
 
@@ -131,6 +150,10 @@ class approve_form extends dynamic_form {
 
     /**
      * Load in the request's requested values as the granted defaults.
+     *
+     * When the student didn't request a change to the time limit, default
+     * to the quiz's own current time limit rather than a bare 0, so it
+     * doesn't read as "grant a 0-minute limit".
      */
     public function set_data_for_dynamic_submission(): void {
         $request = $this->get_request();
@@ -138,7 +161,7 @@ class approve_form extends dynamic_form {
         $this->set_data((object) [
             'requestid' => $request->id,
             'grantedtimeclose' => !empty($request->requestedtimeclose) ? $request->requestedtimeclose : 0,
-            'grantedtimelimit' => !empty($request->requestedtimelimit) ? $request->requestedtimelimit : 0,
+            'grantedtimelimit' => !empty($request->requestedtimelimit) ? $request->requestedtimelimit : $this->get_quiz()->timelimit,
             'grantedattempts' => ($request->requestedattempts !== null) ? $request->requestedattempts : '',
         ]);
     }

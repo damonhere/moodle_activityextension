@@ -2,6 +2,38 @@
 
 All notable changes to `local_quizextensionmanager` are documented here.
 
+## [0.3.2] - 2026-09-07
+
+### Changed
+
+- `request_form.php`: replaced the free-text "requested new number of
+  attempts" field, which was ambiguous between "the new total" and "how
+  many extra", with a yes/no checkbox ("I need an additional attempt at
+  this quiz"). `request.php` converts it to a total (current + 1) before
+  storing, so `requestedattempts` still means "new total attempts"
+  everywhere downstream -- no schema or `request_manager`/`override_manager`
+  changes. Hidden entirely when the quiz already allows unlimited
+  attempts.
+- `approve_form.php`: now shows the quiz's current attempts total
+  alongside the (unchanged, still an absolute-total) granted-attempts
+  field, so the teacher can see the actual difference themselves.
+- Retired the now-unused `form:requestedattempts` /
+  `form:requestedattempts_help` lang strings; added
+  `form:needsadditionalattempt`.
+
+## [0.3.1] - 2026-09-07
+
+### Fixed
+
+- The requested/granted time limit fields (`request_form.php`,
+  `approve_form.php`) now default to the quiz's current time limit while
+  unchecked, instead of a bare `0` -- flagged from testing on a real site
+  as reading confusingly like "requesting a 0-minute limit". Purely a
+  display fix: the `duration` form element already submits `0` whenever
+  its checkbox is unchecked regardless of the displayed number, and that
+  `0` is (and was already) correctly treated as "no change requested"
+  downstream, so this changes nothing about actual behaviour.
+
 ## [0.3.0] - 2026-09-07
 
 ### Added

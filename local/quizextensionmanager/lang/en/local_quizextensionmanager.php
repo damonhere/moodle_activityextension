@@ -125,9 +125,7 @@ $string['form:currenttimelimit'] = 'Current time limit';
 $string['form:currentattempts'] = 'Current attempts allowed';
 $string['form:requestedtimeclose'] = 'Requested new close date';
 $string['form:requestedtimelimit'] = 'Requested new time limit';
-$string['form:requestedattempts'] = 'Requested new number of attempts';
-$string['form:requestedattempts_help'] = 'Leave blank if you are not requesting a change to the number of ' .
-    'attempts allowed.';
+$string['form:needsadditionalattempt'] = 'I need an additional attempt at this quiz';
 $string['form:reason'] = 'Reason';
 $string['form:documentation'] = 'Supporting documentation';
 $string['form:submit'] = 'Submit request';

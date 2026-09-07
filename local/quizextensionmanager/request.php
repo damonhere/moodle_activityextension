@@ -102,8 +102,9 @@ $formdata->cmid = $cm->id;
 if ($requestrecord) {
     $formdata->id = $requestrecord->id;
     $formdata->requestedtimeclose = $requestrecord->requestedtimeclose ?: 0;
-    $formdata->requestedtimelimit = $requestrecord->requestedtimelimit ?: 0;
-    $formdata->requestedattempts = $requestrecord->requestedattempts;
+    $formdata->requestedtimelimit = $requestrecord->requestedtimelimit ?: $quiz->timelimit;
+    $formdata->needsadditionalattempt = !empty($requestrecord->requestedattempts)
+        && (int) $requestrecord->requestedattempts > (int) $quiz->attempts;
     $formdata->reason = $requestrecord->reason;
 
     if ($documentationmode !== 'none') {
@@ -124,12 +125,14 @@ $mform->set_data($formdata);
 if ($mform->is_cancelled()) {
     redirect(new moodle_url('/local/quizextensionmanager/myrequests.php', ['cmid' => $cm->id]));
 } else if ($data = $mform->get_data()) {
-    $requestedattempts = trim((string) ($data->requestedattempts ?? ''));
-
+    // The form only asks a yes/no question ("I need an additional
+    // attempt") to avoid the ambiguity of a raw number (new total vs. how
+    // many extra); convert it to the "new total attempts" value the rest
+    // of the plugin (and quiz_overrides itself) works in terms of.
     $fielddata = [
         'requestedtimeclose' => !empty($data->requestedtimeclose) ? (int) $data->requestedtimeclose : null,
         'requestedtimelimit' => !empty($data->requestedtimelimit) ? (int) $data->requestedtimelimit : null,
-        'requestedattempts' => ($requestedattempts !== '') ? (int) $requestedattempts : null,
+        'requestedattempts' => !empty($data->needsadditionalattempt) ? ((int) $quiz->attempts + 1) : null,
         'reason' => $data->reason ?? '',
     ];
 
