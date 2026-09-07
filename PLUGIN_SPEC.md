@@ -1,9 +1,26 @@
 # Moodle Plugin: Quiz Time Extension Requests
 
-**Version:** 0.7
+**Version:** 0.8
+
+_Kept in lockstep with `local_quizextensionmanager`'s `$plugin->release` in
+`version.php` -- every bump here should bump that too, even for a
+spec-only or documentation change, and vice versa. (The companion
+`quizaccess_quizextensionmanager` subplugin versions independently, since
+it changes far less often and isn't what this spec version is tracking.)_
 
 ## Version History
 
+- **v0.8** (2026-09-07) — Fixed a real bug hit on a live site: submitting a
+  request and landing on `myrequests.php?cmid=...` threw "Coding error
+  detected... The course you passed to $PAGE->set_cm does not correspond
+  to the $cm." Cause: `myrequests.php` called a bare `require_login()`
+  even when a `cmid` was present, instead of `require_login($course,
+  false, $cm)` like every other page in the plugin -- leaving
+  `$PAGE->course` set to the site while `$PAGE->set_context()` was given
+  this quiz's real module context, a mismatch Moodle's own
+  navigation/activity-header rendering choked on. Also starts keeping this
+  version number in lockstep with `local_quizextensionmanager`'s
+  `$plugin->release` (previously 0.7 vs. 0.3.3 -- flagged as confusing).
 - **v0.7** (2026-09-07) — `extension_link::render()` no longer shows the
   student-facing "Request extension" entry point (or its status variants)
   on the quiz view page to anyone holding `local/quizextensionmanager:manage`

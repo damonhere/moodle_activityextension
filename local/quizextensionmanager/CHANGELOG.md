@@ -2,6 +2,21 @@
 
 All notable changes to `local_quizextensionmanager` are documented here.
 
+Starting at 0.8, this release number is kept in lockstep with
+`PLUGIN_SPEC.md`'s version (previously they'd drifted to 0.7 vs. 0.3.3).
+
+## [0.8] - 2026-09-07
+
+### Fixed
+
+- `myrequests.php`: called a bare `require_login()` even when a `cmid` was
+  present, instead of `require_login($course, false, $cm)` like every
+  other page in the plugin. This left `$PAGE->course` set to the site
+  while `$PAGE->set_context()` was given the quiz's real module context --
+  a real bug hit on a live site, throwing "Coding error detected... The
+  course you passed to $PAGE->set_cm does not correspond to the $cm."
+  right after a student submitted a request and landed on this page.
+
 ## [0.3.3] - 2026-09-07
 
 ### Fixed

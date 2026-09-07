@@ -31,17 +31,24 @@ $cmid = optional_param('cmid', 0, PARAM_INT);
 $cancelid = optional_param('cancel', 0, PARAM_INT);
 $confirm = optional_param('confirm', 0, PARAM_BOOL);
 
-require_login();
-
 if ($cmid) {
     $cm = get_coursemodule_from_id('quiz', $cmid, 0, false, MUST_EXIST);
     $course = get_course($cm->course);
     $context = context_module::instance($cm->id);
+    // Must pass $course/$cm together here (not a bare require_login()) so
+    // $PAGE->course and $PAGE->cm are established consistently before
+    // $PAGE->set_context() below sets a module context -- otherwise
+    // $PAGE->course stays the site while the context belongs to this
+    // quiz's real course, and Moodle's own navigation/activity-header
+    // rendering throws "The course you passed to $PAGE->set_cm does not
+    // correspond to the $cm." trying to reconcile the two.
+    require_login($course, false, $cm);
     require_capability('local/quizextensionmanager:request', $context);
 } else {
     $cm = null;
     $course = null;
     $context = context_system::instance();
+    require_login();
 }
 
 $pageparams = $cmid ? ['cmid' => $cmid] : [];
