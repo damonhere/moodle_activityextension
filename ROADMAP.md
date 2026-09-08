@@ -9,6 +9,26 @@ from this file.
 
 ## Proposed
 
+### Course-level default for allowed documentation file types
+
+Flagged: 2026-09-07, from testing on a real site.
+
+"Allowed documentation file types" is currently only configurable per-quiz
+(`quizextensionmanager_quizset.allowedfiletypes`, falling back to the
+site-wide default). For a course with many quizzes, that means setting the
+same file types over and over. `requestwindowdays` already has exactly the
+two-tier pattern this should follow: a per-quiz value that, when unset,
+falls back to a per-*course* default (`quizextensionmanager_crsset.
+defaultrequestwindowdays`) before finally falling back to the site-wide
+setting. Allowed file types should work the same way.
+
+Needs a schema change: a new `allowedfiletypes` column on
+`quizextensionmanager_crsset` (with a `db/upgrade.php` step), plus a field
+on `course_settings_form.php` using the same `filetypes` element added to
+the per-quiz form in v0.11, and updating `eligibility`/`request_form.php`'s
+fallback chain (quiz -> course -> site) to match how the request window
+already resolves.
+
 ### Show teachers a pending-request count + link on the quiz view page
 
 Flagged: 2026-09-07, alongside the "hide from teachers" fix (now done, see
