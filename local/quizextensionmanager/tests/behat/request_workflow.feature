@@ -87,3 +87,17 @@ Feature: Students request a quiz time extension
     And I log out
     When I am on the "Quiz 1" "mod_quiz > View" page logged in as "student2"
     Then I should see "Request extension"
+
+  Scenario: A student requests an additional attempt via the checkbox
+    Given I am on the "Quiz 1" "mod_quiz > View" page logged in as "student1"
+    And I click on "Request extension" "link"
+    And I set the following fields to these values:
+      | I need an additional attempt at this quiz | 1                    |
+      | Reason                                     | I missed my attempt. |
+    And I press "Submit request"
+    Then I should see "Your extension request has been saved."
+    And I log out
+
+    When I am on the "Quiz 1" "mod_quiz > View" page logged in as "teacher1"
+    And I navigate to "Extension requests" in current page administration
+    Then I should see "3" in the "Student One" "table_row"

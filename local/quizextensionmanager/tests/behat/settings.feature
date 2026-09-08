@@ -24,6 +24,10 @@ Feature: Teachers configure per-quiz extension request settings
     Given I am on the "Quiz 1" "mod_quiz > View" page logged in as "student1"
     Then I should see "Request extension"
 
+  Scenario: A teacher does not see the student-facing "Request extension" link
+    Given I am on the "Quiz 1" "mod_quiz > View" page logged in as "teacher1"
+    Then I should not see "Request extension"
+
   Scenario: A teacher disables extension requests for a quiz
     Given I am on the "Quiz 1" "mod_quiz > View" page logged in as "teacher1"
     And I navigate to "Extension request settings" in current page administration

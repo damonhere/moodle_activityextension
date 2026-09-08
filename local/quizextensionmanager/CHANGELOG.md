@@ -5,6 +5,26 @@ All notable changes to `local_quizextensionmanager` are documented here.
 Starting at 0.8, this release number is kept in lockstep with
 `PLUGIN_SPEC.md`'s version (previously they'd drifted to 0.7 vs. 0.3.3).
 
+## [0.13] - 2026-09-07
+
+### Added
+
+- `tests/behat/documentation.feature` (new): a teacher configures a quiz's
+  documentation mode, a student uploads a file with their request (via
+  the real `I upload "..." file to "..." filemanager` Behat step, tagged
+  `@_file_upload`), and the teacher sees it in the approve modal. Fixture
+  at `tests/fixtures/test-documentation.pdf`.
+- `tests/notification_manager_test.php` (new): PHPUnit coverage for
+  `notification_manager::send_new_request()` -- the teacher gets notified,
+  the student doesn't, and approving a request doesn't re-send it.
+- `tests/behat/request_workflow.feature`: scenario for requesting an
+  additional attempt via the checkbox (added in 0.6, previously untested).
+- `tests/behat/settings.feature`: scenario confirming a teacher doesn't
+  see the student-facing "Request extension" link (added in 0.7,
+  previously untested).
+
+No runtime behavior changed in this release -- test coverage only.
+
 ## [0.12] - 2026-09-07
 
 ### Changed

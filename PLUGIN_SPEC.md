@@ -1,6 +1,6 @@
 # Moodle Plugin: Quiz Time Extension Requests
 
-**Version:** 0.12
+**Version:** 0.13
 
 _Kept in lockstep with `local_quizextensionmanager`'s `$plugin->release` in
 `version.php` -- every bump here should bump that too, even for a
@@ -10,6 +10,15 @@ it changes far less often and isn't what this spec version is tracking.)_
 
 ## Version History
 
+- **v0.13** (2026-09-07) — Updated the test suite to cover everything
+  built since it was first written: a Behat scenario for the attempts
+  checkbox (v0.6), a teacher not seeing the student-facing link
+  (v0.7), a full documentation upload-then-view scenario
+  (`documentation.feature`, new -- covers v0.9/v0.10, including the real
+  `I upload ... filemanager` Behat step and its `@_file_upload` tag
+  requirement), and PHPUnit coverage for the new-request teacher
+  notification (v0.11). None of the plugin's actual runtime behavior
+  changed.
 - **v0.12** (2026-09-07) — Relabeled the approve-modal's editable fields
   from "Granted close date"/"Granted time limit"/"Granted number of
   attempts" to "Requested close date"/"Requested time limit"/"Requested
