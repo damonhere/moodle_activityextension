@@ -9,17 +9,6 @@ from this file.
 
 ## Proposed
 
-### Show the reviewer's comment on the teacher-facing course-wide report too
-
-Flagged: 2026-09-12, discovered while fixing the same gap on `myrequests.php`
-(the student-facing page, now fixed -- see `PLUGIN_SPEC.md`'s next version).
-
-`classes/table/requests_table.php` (used by `report.php`) shows a
-"Reviewer" column (who reviewed it) but never the reviewer's actual
-comment/reason text, the same gap `myrequests.php` just had. Add a
-`table:reviewreason` column there too, same as was just added to
-`myrequests.php`.
-
 ### Course-level default for allowed documentation file types
 
 Flagged: 2026-09-07, from testing on a real site.

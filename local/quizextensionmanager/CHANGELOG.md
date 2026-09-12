@@ -5,6 +5,15 @@ All notable changes to `local_quizextensionmanager` are documented here.
 Starting at 0.8, this release number is kept in lockstep with
 `PLUGIN_SPEC.md`'s version (previously they'd drifted to 0.7 vs. 0.3.3).
 
+## [0.17] - 2026-09-12
+
+### Added
+
+- `classes/table/requests_table.php`: added a "Reviewer comment" column,
+  the same gap `myrequests.php` had before v0.14 fixed it there. The
+  course-wide teacher report showed who reviewed a request but never the
+  actual comment/reason text left.
+
 ## [0.16] - 2026-09-12
 
 ### Fixed (test suite only -- no app-code change)

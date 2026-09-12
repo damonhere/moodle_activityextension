@@ -1,6 +1,6 @@
 # Moodle Plugin: Quiz Time Extension Requests
 
-**Version:** 0.16
+**Version:** 0.17
 
 _Kept in lockstep with `local_quizextensionmanager`'s `$plugin->release` in
 `version.php` -- every bump here should bump that too, even for a
@@ -10,6 +10,11 @@ it changes far less often and isn't what this spec version is tracking.)_
 
 ## Version History
 
+- **v0.17** (2026-09-12) — `classes/table/requests_table.php` (the
+  teacher-facing course-wide report, `report.php`) now has a
+  "Reviewer comment" column, the same gap `myrequests.php` had before
+  v0.14 fixed it there. Previously the report showed *who* reviewed a
+  request but never the actual comment/reason text they left.
 - **v0.16** (2026-09-12) — PHPUnit was actually run for the first time
   this session (only Behat had been exercised before). All 20 existing
   tests passed, but `tests/quizextensionmanager_test.php` (in both

@@ -45,7 +45,8 @@ class requests_table extends \table_sql {
         parent::__construct($uniqueid);
 
         $columns = [
-            'quizname', 'studentname', 'status', 'requestedtimeclose', 'grantedtimeclose', 'timecreated', 'reviewer', 'actions',
+            'quizname', 'studentname', 'status', 'requestedtimeclose', 'grantedtimeclose', 'timecreated', 'reviewer',
+            'reviewreason', 'actions',
         ];
         $headers = [
             get_string('table:quiz', 'local_quizextensionmanager'),
@@ -55,6 +56,7 @@ class requests_table extends \table_sql {
             get_string('table:grantedtimeclose', 'local_quizextensionmanager'),
             get_string('table:timecreated', 'local_quizextensionmanager'),
             get_string('table:reviewer', 'local_quizextensionmanager'),
+            get_string('table:reviewreason', 'local_quizextensionmanager'),
             get_string('table:actions', 'local_quizextensionmanager'),
         ];
 
@@ -65,7 +67,7 @@ class requests_table extends \table_sql {
         $this->no_sorting('actions');
 
         $fields = 'r.id, r.quizid, r.userid, r.status, r.requestedtimeclose, r.grantedtimeclose, ' .
-            'r.timecreated, r.reviewerid, q.name AS quizname, ' .
+            'r.timecreated, r.reviewerid, r.reviewreason, q.name AS quizname, ' .
             'u.firstname AS ufirstname, u.lastname AS ulastname, ' .
             'rv.firstname AS rvfirstname, rv.lastname AS rvlastname';
 
@@ -106,6 +108,16 @@ class requests_table extends \table_sql {
             return '-';
         }
         return fullname((object) ['firstname' => $row->rvfirstname, 'lastname' => $row->rvlastname]);
+    }
+
+    /**
+     * Render the reviewer comment column.
+     *
+     * @param \stdClass $row
+     * @return string
+     */
+    public function col_reviewreason($row) {
+        return !empty($row->reviewreason) ? format_text((string) $row->reviewreason, FORMAT_PLAIN) : '-';
     }
 
     /**
