@@ -1,6 +1,6 @@
 # Moodle Plugin: Quiz Time Extension Requests
 
-**Version:** 0.13
+**Version:** 0.14
 
 _Kept in lockstep with `local_quizextensionmanager`'s `$plugin->release` in
 `version.php` -- every bump here should bump that too, even for a
@@ -10,6 +10,26 @@ it changes far less often and isn't what this spec version is tracking.)_
 
 ## Version History
 
+- **v0.14** (2026-09-12) — Two bugs found by actually running the Behat
+  suite for the first time (v0.13's test coverage doing its job):
+  - `request.php`'s documentation upload rejected every file, including
+    the PDF fixture the test itself uploads. Root cause: switching to the
+    `filetypes` picker widget in v0.11 changed the stored format from
+    space-separated to comma-separated (`MoodleQuickForm_filetypes::
+    exportValue()` does `implode(',', ...)`), but `request.php`'s parsing
+    was never updated to match -- a real regression from that change.
+    Fixed in `request.php` and the site-wide default in `settings.php`.
+  - `myrequests.php` never displayed the student's own reason or the
+    reviewer's comment, even though both were captured from the very
+    start -- a longstanding gap, not a regression. Added both columns.
+    The same gap on the teacher-facing course-wide report table is noted
+    in `ROADMAP.md` for a follow-up, since it isn't covered by a failing
+    test.
+  - A third failure (a disabled quiz still showing "Request extension" to
+    students) is still under investigation -- confirmed as a save-path
+    bug in `quizsettings.php`/`quiz_settings_form.php` (the saved
+    settings row is stuck at all schema defaults despite the form
+    submission), not yet root-caused or fixed.
 - **v0.13** (2026-09-07) — Updated the test suite to cover everything
   built since it was first written: a Behat scenario for the attempts
   checkbox (v0.6), a teacher not seeing the student-facing link

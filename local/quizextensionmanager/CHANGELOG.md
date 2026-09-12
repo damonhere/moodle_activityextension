@@ -5,6 +5,34 @@ All notable changes to `local_quizextensionmanager` are documented here.
 Starting at 0.8, this release number is kept in lockstep with
 `PLUGIN_SPEC.md`'s version (previously they'd drifted to 0.7 vs. 0.3.3).
 
+## [0.14] - 2026-09-12
+
+Two bugs found by actually running the Behat suite for the first time.
+
+### Fixed
+
+- `request.php`: the documentation filemanager's `accepted_types` was
+  built by splitting `allowedfiletypes` on spaces, but the `filetypes`
+  picker widget introduced in v0.11 stores its value comma-separated
+  (`MoodleQuickForm_filetypes::exportValue()` does `implode(',', ...)`).
+  This silently broke every documentation upload (Moodle received one
+  unsplit `"document,image"`-style token instead of two real types).
+  Also updated the site-wide default in `settings.php` to already be in
+  the correct comma-separated format.
+
+### Added
+
+- `myrequests.php`: added Reason and Reviewer comment columns. Both were
+  captured from the very start but never actually displayed anywhere on
+  the student's own status page -- a longstanding gap, not a regression.
+
+### Known issue
+
+- A disabled quiz still shows "Request extension" to students. Confirmed
+  as a save-path bug in `quizsettings.php`/`quiz_settings_form.php` (the
+  saved settings row is stuck at all schema defaults regardless of what
+  the form submitted) -- root cause not yet found.
+
 ## [0.13] - 2026-09-07
 
 ### Added

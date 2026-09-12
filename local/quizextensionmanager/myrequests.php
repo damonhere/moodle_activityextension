@@ -119,6 +119,8 @@ if (empty($requests)) {
         get_string('table:status', 'local_quizextensionmanager'),
         get_string('table:requestedtimeclose', 'local_quizextensionmanager'),
         get_string('table:grantedtimeclose', 'local_quizextensionmanager'),
+        get_string('table:reason', 'local_quizextensionmanager'),
+        get_string('table:reviewreason', 'local_quizextensionmanager'),
         get_string('table:timecreated', 'local_quizextensionmanager'),
         get_string('table:actions', 'local_quizextensionmanager'),
     ];
@@ -142,11 +144,16 @@ if (empty($requests)) {
             );
         }
 
+        // The student's own reason and any reviewer comment were captured
+        // from the very start but never actually surfaced anywhere on this
+        // page -- confirmed as a real gap via a failing Behat scenario.
         $table->data[] = [
             $requestquiz ? format_string($requestquiz->name) : '-',
             get_string('status:' . $record->status, 'local_quizextensionmanager'),
             !empty($record->requestedtimeclose) ? userdate($record->requestedtimeclose) : '-',
             !empty($record->grantedtimeclose) ? userdate($record->grantedtimeclose) : '-',
+            format_text((string) $record->reason, FORMAT_PLAIN),
+            !empty($record->reviewreason) ? format_text((string) $record->reviewreason, FORMAT_PLAIN) : '-',
             userdate($record->timecreated),
             implode(' | ', $actions),
         ];

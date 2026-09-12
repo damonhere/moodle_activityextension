@@ -83,7 +83,14 @@ $allowedtypes = $quizset->allowedfiletypes ?? get_config('local_quizextensionman
 $filemanageroptions = [
     'subdirs' => 0,
     'maxfiles' => 5,
-    'accepted_types' => (!empty($allowedtypes) && trim((string) $allowedtypes) !== '') ? explode(' ', trim($allowedtypes)) : '*',
+    // The 'filetypes' form element (quiz_settings_form.php / settings.php)
+    // exports/stores its value comma-separated (MoodleQuickForm_filetypes::
+    // exportValue() does implode(',', $value)) -- this used to be a plain
+    // space-separated text field, and this split was never updated when
+    // that changed, silently breaking every upload (Moodle's filemanager
+    // received one unsplit "document,image"-style token instead of two
+    // real types). Confirmed via a failing Behat scenario.
+    'accepted_types' => (!empty($allowedtypes) && trim((string) $allowedtypes) !== '') ? explode(',', trim($allowedtypes)) : '*',
 ];
 
 $customdata = [

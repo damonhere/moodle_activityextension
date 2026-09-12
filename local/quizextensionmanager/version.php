@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_quizextensionmanager';
-$plugin->version   = 2026090809;
+$plugin->version   = 2026091200;
 $plugin->requires  = 2026042000; // Moodle 5.2.
 $plugin->maturity  = MATURITY_ALPHA;
-$plugin->release   = '0.13'; // Kept in lockstep with PLUGIN_SPEC.md's version -- see that file's Version History intro.
+$plugin->release   = '0.14'; // Kept in lockstep with PLUGIN_SPEC.md's version -- see that file's Version History intro.

@@ -189,6 +189,7 @@ $string['table:grantedtimeclose'] = 'Granted close date';
 $string['table:reason'] = 'Reason';
 $string['table:timecreated'] = 'Submitted';
 $string['table:reviewer'] = 'Reviewer';
+$string['table:reviewreason'] = 'Reviewer comment';
 $string['table:actions'] = 'Actions';
 $string['table:view'] = 'View';
 

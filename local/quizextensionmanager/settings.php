@@ -66,7 +66,10 @@ if ($hassiteconfig) {
         'local_quizextensionmanager/allowedfiletypes',
         get_string('settings:allowedfiletypes', 'local_quizextensionmanager'),
         get_string('settings:allowedfiletypes_desc', 'local_quizextensionmanager'),
-        'document image'
+        // Comma-separated to match MoodleQuickForm_filetypes::exportValue()'s
+        // own canonical format (see the note in request.php) -- not a space,
+        // even though this default predates the admin ever saving this page.
+        'document,image'
     ));
 
     // Notification templates.
