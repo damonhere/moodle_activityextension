@@ -28,6 +28,14 @@ Feature: Teachers configure per-quiz extension request settings
     Given I am on the "Quiz 1" "mod_quiz > View" page logged in as "teacher1"
     Then I should not see "Request extension"
 
+  # @javascript is required here, not optional: unchecking an advcheckbox
+  # (a real checkbox plus a same-named hidden "0" fallback, so unchecked
+  # boxes still submit something) is broken under the non-JS BrowserKit
+  # driver -- confirmed via a debug dump showing $_POST['enabled'] entirely
+  # absent when this scenario ran without @javascript. A real browser
+  # (WebDriver) submits the hidden fallback correctly; BrowserKit's form
+  # parser loses it when two same-named inputs exist. Not a plugin bug.
+  @javascript
   Scenario: A teacher disables extension requests for a quiz
     Given I am on the "Quiz 1" "mod_quiz > View" page logged in as "teacher1"
     And I navigate to "Extension request settings" in current page administration
@@ -38,6 +46,9 @@ Feature: Teachers configure per-quiz extension request settings
     And I am on the "Quiz 1" "mod_quiz > View" page logged in as "student1"
     Then I should not see "Request extension"
 
+  # See the comment on the previous scenario -- same advcheckbox/BrowserKit
+  # limitation applies here.
+  @javascript
   Scenario: A teacher re-enables extension requests for a quiz
     Given I am on the "Quiz 1" "mod_quiz > View" page logged in as "teacher1"
     And I navigate to "Extension request settings" in current page administration

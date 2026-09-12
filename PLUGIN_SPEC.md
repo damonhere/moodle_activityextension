@@ -1,6 +1,6 @@
 # Moodle Plugin: Quiz Time Extension Requests
 
-**Version:** 0.14
+**Version:** 0.15
 
 _Kept in lockstep with `local_quizextensionmanager`'s `$plugin->release` in
 `version.php` -- every bump here should bump that too, even for a
@@ -10,6 +10,20 @@ it changes far less often and isn't what this spec version is tracking.)_
 
 ## Version History
 
+- **v0.15** (2026-09-12) — Resolved v0.14's "known issue": the third
+  Behat failure (a disabled quiz still showing "Request extension" to
+  students) turned out to be a **test-suite** bug, not a plugin bug.
+  `quiz_settings_form.php`'s "Allow extension requests for this quiz"
+  field is an `advcheckbox` (a real checkbox plus a same-named hidden
+  `"0"` fallback -- the standard way Moodle makes unchecked boxes still
+  submit something). A debug dump confirmed `$_POST['enabled']` was
+  entirely absent when the Behat scenario unchecked it under the non-JS
+  BrowserKit driver -- a known category of BrowserKit/Goutte limitation
+  with same-named checkbox+hidden pairs; a real browser (WebDriver)
+  handles this correctly. Fixed by tagging the two affected scenarios
+  `@javascript` in `settings.feature`, with a comment explaining why.
+  `quizsettings.php`, `quiz_settings_form.php`, `eligibility.php`, and
+  `extension_link.php` were all already correct -- no app-code change.
 - **v0.14** (2026-09-12) — Two bugs found by actually running the Behat
   suite for the first time (v0.13's test coverage doing its job):
   - `request.php`'s documentation upload rejected every file, including

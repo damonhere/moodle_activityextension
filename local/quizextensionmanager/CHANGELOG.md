@@ -5,6 +5,20 @@ All notable changes to `local_quizextensionmanager` are documented here.
 Starting at 0.8, this release number is kept in lockstep with
 `PLUGIN_SPEC.md`'s version (previously they'd drifted to 0.7 vs. 0.3.3).
 
+## [0.15] - 2026-09-12
+
+### Fixed (test suite only -- no app-code change)
+
+- `tests/behat/settings.feature`: tagged the two scenarios that toggle
+  the "Allow extension requests for this quiz" checkbox `@javascript`.
+  That field is an `advcheckbox` (a real checkbox plus a same-named
+  hidden `"0"` fallback), and a debug dump confirmed `$_POST['enabled']`
+  was entirely absent when Behat unchecked it under the non-JS
+  BrowserKit driver -- a known BrowserKit/Goutte limitation with
+  same-named checkbox+hidden pairs, not a bug in `quizsettings.php`,
+  `quiz_settings_form.php`, `eligibility.php`, or `extension_link.php`
+  (all confirmed correct). Resolves the "known issue" noted in 0.14.
+
 ## [0.14] - 2026-09-12
 
 Two bugs found by actually running the Behat suite for the first time.
