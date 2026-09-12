@@ -2,6 +2,18 @@
 
 All notable changes to `quizaccess_quizextensionmanager` are documented here.
 
+## [0.1.2] - 2026-09-12
+
+### Fixed (test suite only -- no app-code change)
+
+- `tests/quizextensionmanager_test.php` was renamed to `tests/smoke_test.php`
+  to match the class name inside it (`smoke_test`). PHPUnit's filename-based
+  discovery was silently skipping the whole file because of the mismatch --
+  and since this smoke test was this subplugin's *only* test file, its
+  entire testsuite was running zero tests ("No tests executed!") while
+  still exiting non-failing. Same bug, same fix, as
+  `local_quizextensionmanager`'s v0.16.
+
 ## [0.1.1] - 2026-09-07
 
 ### Fixed

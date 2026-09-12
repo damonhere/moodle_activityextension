@@ -1,6 +1,6 @@
 # Moodle Plugin: Quiz Time Extension Requests
 
-**Version:** 0.15
+**Version:** 0.16
 
 _Kept in lockstep with `local_quizextensionmanager`'s `$plugin->release` in
 `version.php` -- every bump here should bump that too, even for a
@@ -10,6 +10,20 @@ it changes far less often and isn't what this spec version is tracking.)_
 
 ## Version History
 
+- **v0.16** (2026-09-12) — PHPUnit was actually run for the first time
+  this session (only Behat had been exercised before). All 20 existing
+  tests passed, but `tests/quizextensionmanager_test.php` (in both
+  `local_quizextensionmanager` and the `quizaccess_quizextensionmanager`
+  subplugin) contained a class named `smoke_test`, not
+  `quizextensionmanager_test` -- PHPUnit's filename-based discovery
+  silently skipped both files entirely rather than failing loudly. Worse
+  in the subplugin's case: that smoke test was its *only* test file, so
+  `quizaccess_quizextensionmanager_testsuite` ran zero tests
+  ("No tests executed!") while still exiting non-failing. Fixed by
+  renaming both files to `smoke_test.php` to match their class name (the
+  convention every other test file already follows). No behavior change.
+  Confirmed after the fix: `local_quizextensionmanager_testsuite` 21/21,
+  `quizaccess_quizextensionmanager_testsuite` 1/1.
 - **v0.15** (2026-09-12) — Resolved v0.14's "known issue": the third
   Behat failure (a disabled quiz still showing "Request extension" to
   students) turned out to be a **test-suite** bug, not a plugin bug.
