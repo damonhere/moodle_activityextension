@@ -9,6 +9,32 @@ from this file.
 
 ## Proposed
 
+### Rethink "Maximum extension allowed" -- wrong unit/concept, and unenforced
+
+Flagged: 2026-09-12, from real usage: "It's unusual for a student to
+request additional minutes on the quiz, although perhaps both are
+needed."
+
+`local_quizextensionmanager/maxextension` (site-wide setting, minutes,
+0 = no limit) doesn't cleanly map to either of the two genuinely
+separate things a request can actually change: `requestedtimeclose` (a
+new close date/time -- naturally measured in **days**, e.g. "at most 3
+extra days") and `requestedtimelimit` (a new time limit in seconds --
+where minutes does make sense, e.g. "at most 30 extra minutes on the
+quiz itself"). A single "minutes" cap conflates the two, and matches
+neither request type well on its own.
+
+Also currently **unenforced** -- `settings.php` already has a TODO
+next to it ("decide final units/validation... and enforce this cap when
+requests are approved") and grepping the codebase confirms `maxextension`
+is defined nowhere else; nothing in `eligibility.php` or
+`request_manager.php` reads it. Likely direction: split into two site-
+wide settings, e.g. `maxextensiondays` (caps how far `requestedtimeclose`
+can move the close date out) and `maxextensionminutes` (caps
+`requestedtimelimit`'s increase over the quiz's own time limit), each
+actually validated in `eligibility.php` before a request is allowed to
+be submitted.
+
 ### Investigate a "Settings" link on the Plugins overview page
 
 Flagged: 2026-09-12, from installing on a real production site. Other
