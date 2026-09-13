@@ -9,31 +9,27 @@ from this file.
 
 ## Proposed
 
-### Rethink "Maximum extension allowed" -- wrong unit/concept, and unenforced
+### Rethink "Maximum extension allowed" -- wrong unit, and unenforced
 
 Flagged: 2026-09-12, from real usage: "It's unusual for a student to
-request additional minutes on the quiz, although perhaps both are
-needed."
+request additional minutes on the quiz." On reflection, the more
+important setting is a cap on **days**, not minutes: replace
+`local_quizextensionmanager/maxextension` (currently minutes, 0 = no
+limit) with a `maxextensiondays`-style setting capping how far
+`requestedtimeclose` (the new close date/time) can move out. That maps
+naturally to how a close-date extension is actually requested/thought
+about ("a few extra days"), unlike a flat minutes figure.
 
-`local_quizextensionmanager/maxextension` (site-wide setting, minutes,
-0 = no limit) doesn't cleanly map to either of the two genuinely
-separate things a request can actually change: `requestedtimeclose` (a
-new close date/time -- naturally measured in **days**, e.g. "at most 3
-extra days") and `requestedtimelimit` (a new time limit in seconds --
-where minutes does make sense, e.g. "at most 30 extra minutes on the
-quiz itself"). A single "minutes" cap conflates the two, and matches
-neither request type well on its own.
+Also currently **unenforced** regardless of unit -- `settings.php`
+already has a TODO next to it ("decide final units/validation... and
+enforce this cap when requests are approved"), and grepping the codebase
+confirms `maxextension` is defined nowhere else; nothing in
+`eligibility.php` or `request_manager.php` reads it. Whatever the final
+setting is named, it needs to actually be validated in `eligibility.php`
+before a request is allowed to be submitted.
 
-Also currently **unenforced** -- `settings.php` already has a TODO
-next to it ("decide final units/validation... and enforce this cap when
-requests are approved") and grepping the codebase confirms `maxextension`
-is defined nowhere else; nothing in `eligibility.php` or
-`request_manager.php` reads it. Likely direction: split into two site-
-wide settings, e.g. `maxextensiondays` (caps how far `requestedtimeclose`
-can move the close date out) and `maxextensionminutes` (caps
-`requestedtimelimit`'s increase over the quiz's own time limit), each
-actually validated in `eligibility.php` before a request is allowed to
-be submitted.
+See also the deferred idea below about a separate, multiplier-based cap
+specifically for `requestedtimelimit` (the quiz's own time limit).
 
 ### Investigate a "Settings" link on the Plugins overview page
 
@@ -156,6 +152,23 @@ below the pending list on `manage.php`, scoped to that one quiz, reusing
 
 Bigger, less-settled ideas -- deliberately not acted on yet, pending real
 usage experience.
+
+### Multiplier-based cap on requested time limit extensions
+
+Flagged: 2026-09-12, alongside the `maxextension` rethink above.
+**Explicitly deferred by choice**: "Not for now, but for future
+consideration."
+
+For `requestedtimelimit` (extending the quiz's own time limit -- distinct
+from `requestedtimeclose`, the close-date extension the day-based cap
+above governs), a flat number of extra minutes is a poor fit for the
+most common real-world reason this gets requested: documented
+accommodations, which are conventionally expressed as a multiplier of
+normal time (e.g. "time and a half"/1.5x, or double time/2x), not a fixed
+number of minutes. A future site-wide setting like
+`maxtimelimitmultiplier` (e.g. `2.0`) would cap `requestedtimelimit` at
+that multiple of the quiz's own `timelimit`, rather than (or perhaps in
+addition to) a flat-minutes cap.
 
 ### Consolidate the teacher-side report and per-quiz manage page
 
