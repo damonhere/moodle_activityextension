@@ -24,6 +24,17 @@ Feature: Teachers configure per-quiz extension request settings
     Given I am on the "Quiz 1" "mod_quiz > View" page logged in as "student1"
     Then I should see "Request extension"
 
+  # Regression test for a fatal error (v0.11-v0.17): admin_setting_filetypes
+  # requires its name/description to be lang_string objects (it calls
+  # ->out() on them), not the plain strings get_string() returns. That bug
+  # sat unnoticed for 7 releases because nothing ever actually visited this
+  # page -- only the per-quiz form's (unaffected) filetypes field was
+  # tested. See PLUGIN_SPEC.md v0.18.
+  Scenario: A site admin can view the plugin's site-wide settings page
+    Given I log in as "admin"
+    When I navigate to "Plugins > Local plugins > Quiz extension manager" in site administration
+    Then I should see "Allowed documentation file types"
+
   Scenario: A teacher does not see the student-facing "Request extension" link
     Given I am on the "Quiz 1" "mod_quiz > View" page logged in as "teacher1"
     Then I should not see "Request extension"

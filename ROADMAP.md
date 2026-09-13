@@ -9,6 +9,23 @@ from this file.
 
 ## Proposed
 
+### Investigate a "Settings" link on the Plugins overview page
+
+Flagged: 2026-09-12, from installing on a real production site. Other
+plugins (e.g. the `qtype_formulas` and `qtype_stack` question types) show
+a direct "Settings" link next to their row on *Site administration ->
+Plugins -> Plugins overview -> Additional plugins*, rather than making
+the admin hunt for the settings page through the category tree. Worth
+checking whether `local_quizextensionmanager` (and/or the
+`quizaccess_quizextensionmanager` subplugin, which currently has no
+settings page at all) can get the same treatment, and if so what the
+actual mechanism is -- likely tied to how each plugin type's
+`\core\plugininfo\*` class resolves a matching admin settings/external
+page by component name, which our `settings.php` may or may not already
+satisfy (it registers `admin_settingpage('local_quizextensionmanager',
+...)`, i.e. already named after the component -- unclear yet whether
+that's sufficient or something else is needed).
+
 ### Course-level default for allowed documentation file types
 
 Flagged: 2026-09-07, from testing on a real site.
