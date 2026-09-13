@@ -1,6 +1,6 @@
 # Moodle Plugin: Quiz Time Extension Requests
 
-**Version:** 0.17
+**Version:** 0.18
 
 _Kept in lockstep with `local_quizextensionmanager`'s `$plugin->release` in
 `version.php` -- every bump here should bump that too, even for a
@@ -10,6 +10,24 @@ it changes far less often and isn't what this spec version is tracking.)_
 
 ## Version History
 
+- **v0.18** (2026-09-12) — Fixed a fatal error, present since v0.11, on
+  the plugin's own site-wide settings page (Site administration ->
+  Plugins -> Local plugins -> Extension request settings): "Call to a
+  member function out() on string" from `admin_setting_filetypes::
+  output_html()` (`lib/adminlib.php`), which calls
+  `$this->visiblename->out()` -- it requires `$visiblename` to be a
+  `lang_string` object, not the plain string `get_string()` returns.
+  Confirmed against every real core usage of `admin_setting_filetypes`
+  (`admin/settings/appearance.php`, `mod/assign/submission/file/
+  settings.php`, `media/player/videojs/settings.php`), all of which pass
+  `new lang_string(...)`. `settings.php` now does the same for that
+  setting, and for consistency every other setting's name/description in
+  that file too (matching Moodle's own documented practice for
+  settings.php, which is parsed on every single admin page load). Only
+  the site-wide admin settings page was affected -- the per-quiz
+  documentation file-types field (`quiz_settings_form.php`'s `filetypes`
+  form element, a different class) was unaffected and already tested.
+  Found while attempting a first production install.
 - **v0.17** (2026-09-12) — `classes/table/requests_table.php` (the
   teacher-facing course-wide report, `report.php`) now has a
   "Reviewer comment" column, the same gap `myrequests.php` had before

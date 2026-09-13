@@ -32,8 +32,8 @@ if ($hassiteconfig) {
     // TODO: decide final units/validation (minutes vs. hours) and enforce this cap when requests are approved.
     $settings->add(new admin_setting_configtext(
         'local_quizextensionmanager/maxextension',
-        get_string('settings:maxextension', 'local_quizextensionmanager'),
-        get_string('settings:maxextension_desc', 'local_quizextensionmanager'),
+        new lang_string('settings:maxextension', 'local_quizextensionmanager'),
+        new lang_string('settings:maxextension_desc', 'local_quizextensionmanager'),
         0,
         PARAM_INT
     ));
@@ -41,16 +41,16 @@ if ($hassiteconfig) {
     // Whether a reason is required by default. Can be overridden per quiz.
     $settings->add(new admin_setting_configcheckbox(
         'local_quizextensionmanager/reasonrequired',
-        get_string('settings:reasonrequired', 'local_quizextensionmanager'),
-        get_string('settings:reasonrequired_desc', 'local_quizextensionmanager'),
+        new lang_string('settings:reasonrequired', 'local_quizextensionmanager'),
+        new lang_string('settings:reasonrequired_desc', 'local_quizextensionmanager'),
         1
     ));
 
     // Default documentation mode: none / optional / required. Can be overridden per quiz.
     $settings->add(new admin_setting_configselect(
         'local_quizextensionmanager/documentationmode',
-        get_string('settings:documentationmode', 'local_quizextensionmanager'),
-        get_string('settings:documentationmode_desc', 'local_quizextensionmanager'),
+        new lang_string('settings:documentationmode', 'local_quizextensionmanager'),
+        new lang_string('settings:documentationmode_desc', 'local_quizextensionmanager'),
         'none',
         [
             'none'     => get_string('documentationmode:none', 'local_quizextensionmanager'),
@@ -62,10 +62,19 @@ if ($hassiteconfig) {
     // Default allowed documentation file types. Can be overridden per quiz.
     // admin_setting_filetypes gives admins the same file-type browser widget
     // used for e.g. assignment submission types, rather than a bare text box.
+    //
+    // Its output_html() (see lib/adminlib.php) calls $this->visiblename->out(),
+    // so $visiblename *must* be a lang_string object here, not a plain string
+    // -- passing get_string()'s return value (a plain string with no ->out()
+    // method) throws "Call to a member function out() on string" the moment
+    // this settings page is ever viewed. Confirmed against every real core
+    // usage of admin_setting_filetypes (admin/settings/appearance.php,
+    // mod/assign/submission/file/settings.php, media/player/videojs/settings.php),
+    // which all pass new lang_string(...) for this exact reason.
     $settings->add(new admin_setting_filetypes(
         'local_quizextensionmanager/allowedfiletypes',
-        get_string('settings:allowedfiletypes', 'local_quizextensionmanager'),
-        get_string('settings:allowedfiletypes_desc', 'local_quizextensionmanager'),
+        new lang_string('settings:allowedfiletypes', 'local_quizextensionmanager'),
+        new lang_string('settings:allowedfiletypes_desc', 'local_quizextensionmanager'),
         // Comma-separated to match MoodleQuickForm_filetypes::exportValue()'s
         // own canonical format (see the note in request.php) -- not a space,
         // even though this default predates the admin ever saving this page.
@@ -76,48 +85,48 @@ if ($hassiteconfig) {
     // TODO: decide on and document the full set of supported placeholders (e.g. {$a->quizname}).
     $settings->add(new admin_setting_configtext(
         'local_quizextensionmanager/notifyapprovedsubject',
-        get_string('settings:notifyapprovedsubject', 'local_quizextensionmanager'),
-        get_string('settings:notifyapprovedsubject_desc', 'local_quizextensionmanager'),
+        new lang_string('settings:notifyapprovedsubject', 'local_quizextensionmanager'),
+        new lang_string('settings:notifyapprovedsubject_desc', 'local_quizextensionmanager'),
         '',
         PARAM_RAW
     ));
 
     $settings->add(new admin_setting_configtextarea(
         'local_quizextensionmanager/notifyapprovedbody',
-        get_string('settings:notifyapprovedbody', 'local_quizextensionmanager'),
-        get_string('settings:notifyapprovedbody_desc', 'local_quizextensionmanager'),
+        new lang_string('settings:notifyapprovedbody', 'local_quizextensionmanager'),
+        new lang_string('settings:notifyapprovedbody_desc', 'local_quizextensionmanager'),
         '',
         PARAM_RAW
     ));
 
     $settings->add(new admin_setting_configtext(
         'local_quizextensionmanager/notifydeniedsubject',
-        get_string('settings:notifydeniedsubject', 'local_quizextensionmanager'),
-        get_string('settings:notifydeniedsubject_desc', 'local_quizextensionmanager'),
+        new lang_string('settings:notifydeniedsubject', 'local_quizextensionmanager'),
+        new lang_string('settings:notifydeniedsubject_desc', 'local_quizextensionmanager'),
         '',
         PARAM_RAW
     ));
 
     $settings->add(new admin_setting_configtextarea(
         'local_quizextensionmanager/notifydeniedbody',
-        get_string('settings:notifydeniedbody', 'local_quizextensionmanager'),
-        get_string('settings:notifydeniedbody_desc', 'local_quizextensionmanager'),
+        new lang_string('settings:notifydeniedbody', 'local_quizextensionmanager'),
+        new lang_string('settings:notifydeniedbody_desc', 'local_quizextensionmanager'),
         '',
         PARAM_RAW
     ));
 
     $settings->add(new admin_setting_configtext(
         'local_quizextensionmanager/notifynewrequestsubject',
-        get_string('settings:notifynewrequestsubject', 'local_quizextensionmanager'),
-        get_string('settings:notifynewrequestsubject_desc', 'local_quizextensionmanager'),
+        new lang_string('settings:notifynewrequestsubject', 'local_quizextensionmanager'),
+        new lang_string('settings:notifynewrequestsubject_desc', 'local_quizextensionmanager'),
         '',
         PARAM_RAW
     ));
 
     $settings->add(new admin_setting_configtextarea(
         'local_quizextensionmanager/notifynewrequestbody',
-        get_string('settings:notifynewrequestbody', 'local_quizextensionmanager'),
-        get_string('settings:notifynewrequestbody_desc', 'local_quizextensionmanager'),
+        new lang_string('settings:notifynewrequestbody', 'local_quizextensionmanager'),
+        new lang_string('settings:notifynewrequestbody_desc', 'local_quizextensionmanager'),
         '',
         PARAM_RAW
     ));

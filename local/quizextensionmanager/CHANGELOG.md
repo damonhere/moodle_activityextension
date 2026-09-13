@@ -5,6 +5,24 @@ All notable changes to `local_quizextensionmanager` are documented here.
 Starting at 0.8, this release number is kept in lockstep with
 `PLUGIN_SPEC.md`'s version (previously they'd drifted to 0.7 vs. 0.3.3).
 
+## [0.18] - 2026-09-12
+
+### Fixed
+
+- `settings.php`: fixed a fatal error, present since v0.11, on the
+  plugin's own site-wide settings page -- "Call to a member function
+  out() on string" from `admin_setting_filetypes::output_html()`
+  (`lib/adminlib.php`), which requires `$visiblename` to be a
+  `lang_string` object (it calls `->out()` on it), not the plain string
+  `get_string()` returns. Confirmed against every real core usage of
+  `admin_setting_filetypes`, which all pass `new lang_string(...)`.
+  Switched that setting -- and, for consistency, every other setting's
+  name/description in this file -- to `new lang_string(...)`, matching
+  Moodle's own documented practice for settings.php files. The per-quiz
+  documentation file-types field (a different, unaffected code path) was
+  already tested and unaffected. Found while attempting a first
+  production install via the zip installer.
+
 ## [0.17] - 2026-09-12
 
 ### Added
