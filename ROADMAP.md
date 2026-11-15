@@ -27,6 +27,33 @@ can see at a glance whether "I need a second attempt" is justified. Also
 worth considering: surfacing the same summary on the request form itself
 so students see what they've already used before asking.
 
+### Show the current time limit on the Approve modal, and let teachers disable time-limit requests
+
+Flagged: 2026-11-15, from real usage: on a set of quizzes configured with
+no time limit, students keep entering a time limit anyway (sometimes
+absurdly short ones), and the teacher has to strip them out by hand.
+
+Two parts:
+
+1. **Display.** `approve_form.php` has an editable "Requested time limit"
+   field but never shows the quiz's *current* time limit (only
+   `request_form.php` does, via `form:currenttimelimit`). Show it, as the
+   modal already does for the current attempts limit, so the teacher sees
+   at a glance whether a requested limit is a change from "no limit".
+2. **Disable switch.** Add a way to stop students requesting time-limit
+   changes at all -- both a per-quiz override (`quizextensionmanager_quizset`)
+   and a course-wide default (`quizextensionmanager_crsset`), following the
+   same quiz -> course -> site fallback pattern `requestwindowdays` already
+   uses. Needs new columns with a `db/upgrade.php` step and matching
+   fields on `quiz_settings_form.php` / `course_settings_form.php`. When
+   disabled, `request_form.php` should hide the time-limit field, and
+   `eligibility`/`request_manager::create_request()` should ignore any
+   submitted `requestedtimelimit` rather than trusting the form. Worth
+   considering the same switch for the attempts field, since it has the
+   same "students ask for things they shouldn't get" problem. A related
+   cheaper safeguard: don't offer the time-limit field at all when the
+   quiz has no limit (a time limit can't be "extended" from nothing).
+
 ### Offer a "requested start date" option alongside the close date
 
 Flagged: 2026-11-15, from real usage. The current close-date-only design
