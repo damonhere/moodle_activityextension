@@ -9,6 +9,53 @@ from this file.
 
 ## Proposed
 
+### Show the date a request was submitted on the manage.php pending list
+
+Flagged: 2026-11-15, from real usage ("the Extension requests list needs
+'requested Date' on the list").
+
+`manage.php`'s pending-requests table currently shows Student, Requested
+close date, Requested time limit, Requested attempts, Reason and Actions
+-- but not *when* the request was made. The course-wide report
+(`requests_table.php`) and `myrequests.php` already have a "Submitted"
+column (`table:timecreated`); `manage.php` is the one list missing it,
+and it's the one teachers actually work from. Add the same column (and
+consider defaulting the sort to oldest-first so the longest-waiting
+request is at the top). Note: this assumes "requested date" means the
+date submitted, not the *requested close date*, which is already shown.
+
+### Show the student's attempt history in the Approve modal
+
+Flagged: 2026-11-15, from real usage: many students request 2 attempts
+when they should only be given 1.
+
+`approve_form.php` currently shows only the quiz's own attempts limit
+(`form:currentattempts`) next to the editable granted-attempts field --
+nothing about what *this student* has already used. Sometimes a request
+is legitimate (the student started an attempt but never finished it and
+needs a new one), and the teacher can't tell without leaving the modal.
+Show, for the requesting student on that quiz: how many attempts they
+have started, how many are finished vs. still in progress/abandoned, and
+ideally each attempt's state and grade/score (read from
+`{quiz_attempts}`, e.g. via `quiz_get_user_attempts()`), so the teacher
+can see at a glance whether "I need a second attempt" is justified. Also
+worth considering: surfacing the same summary on the request form itself
+so students see what they've already used before asking.
+
+### Offer a "requested start date" option alongside the close date
+
+Flagged: 2026-11-15, from real usage. The current close-date-only design
+suits a "take anytime" quiz, but another site (or a future use here) may
+need a student to request a later *start* (open) date instead -- e.g.
+they were absent or enrolled late. `quiz_overrides` supports `timeopen`
+natively, and `override_manager` already carries an existing override's
+`timeopen` forward on update, so the plumbing is mostly there. Needs: a
+`requestedtimeopen`/`grantedtimeopen` pair on the request table (with a
+`db/upgrade.php` step), an optional start-date field on `request_form.php`
+and `approve_form.php`, and likely a per-quiz or site-wide setting
+choosing which of close date / start date (or both) a request may
+change, so a site like this one can keep exposing only the close date.
+
 ### Rethink "Maximum extension allowed" -- wrong unit, and unenforced
 
 Flagged: 2026-09-12, from real usage: "It's unusual for a student to
