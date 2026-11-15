@@ -9,21 +9,6 @@ from this file.
 
 ## Proposed
 
-### Show the date a request was submitted on the manage.php pending list
-
-Flagged: 2026-11-15, from real usage ("the Extension requests list needs
-'requested Date' on the list").
-
-`manage.php`'s pending-requests table currently shows Student, Requested
-close date, Requested time limit, Requested attempts, Reason and Actions
--- but not *when* the request was made. The course-wide report
-(`requests_table.php`) and `myrequests.php` already have a "Submitted"
-column (`table:timecreated`); `manage.php` is the one list missing it,
-and it's the one teachers actually work from. Add the same column (and
-consider defaulting the sort to oldest-first so the longest-waiting
-request is at the top). Note: this assumes "requested date" means the
-date submitted, not the *requested close date*, which is already shown.
-
 ### Show the student's attempt history in the Approve modal
 
 Flagged: 2026-11-15, from real usage: many students request 2 attempts

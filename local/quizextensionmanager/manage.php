@@ -69,6 +69,7 @@ echo html_writer::start_tag('div', $tableattributes);
 $table = new html_table();
 $table->head = [
     get_string('table:student', 'local_quizextensionmanager'),
+    get_string('table:timecreated', 'local_quizextensionmanager'),
     get_string('table:requestedtimeclose', 'local_quizextensionmanager'),
     get_string('table:requestedtimelimit', 'local_quizextensionmanager'),
     get_string('table:requestedattempts', 'local_quizextensionmanager'),
@@ -91,6 +92,7 @@ foreach ($pending as $record) {
 
     $row = new html_table_row([
         fullname($student),
+        userdate($record->timecreated),
         !empty($record->requestedtimeclose) ? userdate($record->requestedtimeclose) : '-',
         !empty($record->requestedtimelimit) ? format_time($record->requestedtimelimit) : '-',
         $record->requestedattempts ?? '-',

@@ -1,6 +1,6 @@
 # Moodle Plugin: Quiz Time Extension Requests
 
-**Version:** 0.18
+**Version:** 0.19
 
 _Kept in lockstep with `local_quizextensionmanager`'s `$plugin->release` in
 `version.php` -- every bump here should bump that too, even for a
@@ -10,6 +10,12 @@ it changes far less often and isn't what this spec version is tracking.)_
 
 ## Version History
 
+- **v0.19** (2026-11-15) — `manage.php`'s pending-requests list (the page
+  teachers actually work from) now has a "Submitted" column showing the
+  date each request was made, right after Student. The course-wide report
+  and `myrequests.php` already had it. The list was already ordered
+  oldest-first, so the longest-waiting request is at the top. Not yet
+  tested (dev VM unavailable); verify on production.
 - **v0.18** (2026-09-12) — Fixed a fatal error, present since v0.11, on
   the plugin's own site-wide settings page (Site administration ->
   Plugins -> Local plugins -> Extension request settings): "Call to a

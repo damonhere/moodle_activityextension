@@ -5,6 +5,14 @@ All notable changes to `local_quizextensionmanager` are documented here.
 Starting at 0.8, this release number is kept in lockstep with
 `PLUGIN_SPEC.md`'s version (previously they'd drifted to 0.7 vs. 0.3.3).
 
+## [0.19] - 2026-11-15
+
+### Added
+
+- `manage.php`: a "Submitted" column (date the request was made) on the
+  pending-requests list, after Student. The list was already ordered
+  oldest-first. Not yet tested; dev VM unavailable.
+
 ## [0.18] - 2026-09-12
 
 ### Fixed
