@@ -9,7 +9,56 @@ from this file.
 
 ## Proposed
 
-### Show the student's attempt history in the Approve modal
+### Back up / restore / copy the plugin's settings with the course (and shift dates)
+
+Flagged: 2026-11-15, from the Math1145 redeploy question ("does Moodle's
+date adjustment also adjust the extension cutoff dates?"). The user's
+semester workflow is a course copy or restore with a new start date.
+
+Today neither `local_quizextensionmanager` nor
+`quizaccess_quizextensionmanager` has any backup/restore code (no
+`backup/` directory in either), so a course copy brings across **none** of
+the plugin's data: per-quiz settings (`quizextensionmanager_quizset`) and
+per-course settings (`quizextensionmanager_crsset`) silently revert to
+defaults, and have to be re-entered quiz by quiz. The date the user cares
+about most -- the **cutoff for allowing extension requests** -- is only a
+stored absolute timestamp for the `fixed-date` window type
+(`quizset.requestwindowdate`). The default `days-after-close` window is
+computed live from the quiz's own `timeclose` (`eligibility.php:
+get_request_window_end()`), so it already follows Moodle's date shift for
+free; `until-course-end` follows the course's `enddate`.
+
+Goal: a course copy/restore should carry the settings across and shift any
+stored date by the same offset Moodle applies to the rest of the course.
+
+Mechanism (confirmed in core source, not yet tried):
+
+- **Per-quiz settings:** core's quiz backup already calls
+  `add_subplugin_structure('quizaccess', $quiz, true)` (and the matching
+  restore call), so the natural home is a
+  `backup/moodle2/backup_quizaccess_quizextensionmanager_subplugin.class.php`
+  / `restore_quizaccess_quizextensionmanager_subplugin.class.php` pair in
+  the access-rule plugin, carrying the `quizset` row. (Alternative: a
+  `local` plugin backup class -- core also calls `add_plugin_structure(
+  'local', $module, true)` for activities -- but the access rule is the
+  more idiomatic fit for quiz-specific data.)
+- **Per-course settings:** `crsset` needs the course-level equivalent, via
+  `add_plugin_structure('local', $course, ...)`, i.e.
+  `backup_local_quizextensionmanager_plugin` /
+  `restore_local_quizextensionmanager_plugin` in the local plugin.
+- **Date shifting:** in the restore class, run `requestwindowdate` through
+  `$this->apply_date_offset()` (core's `restore_step::apply_date_offset()`),
+  which is what applies the new-start-date offset on a copy/restore.
+- **Request rows:** deliberately *not* copied, since old students' requests
+  shouldn't follow a course into a new semester. (Worth confirming and
+  documenting; only revisit if someone wants an archive.)
+- `quizoverrideid` on any request rows would also need remapping if
+  requests were ever included -- another reason to leave them out.
+
+Also needs: new backup/restore PHPUnit coverage (Moodle's
+`backup_restore_base_testcase`-style round trip) and a Behat course
+copy scenario if practical; note student `quiz_overrides` themselves are
+core data and only come across when the copy includes user data.
 
 Flagged: 2026-11-15, from real usage: many students request 2 attempts
 when they should only be given 1.
